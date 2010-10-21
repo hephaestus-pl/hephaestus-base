@@ -1,0 +1,16 @@
+module RequirementModel.Types
+where 
+
+import BasicTypes
+
+
+data RequirementModel = RM {
+      reqs :: [Requirement]
+}
+
+data Requirement = Requirement {
+      reqId :: Id, 
+      reqName :: String,
+      reqDescription :: String
+}
+

@@ -1,0 +1,7 @@
+ConfigurationKnowledge. ConfigurationKnowledge ::= "configuration knowlege" "{" [ConfigurationItem] "}" ;
+
+ConfigurationItem. ConfigurationItem ::=  FeatureExp "=>" [Transformation] ;
+
+SelectScenario. Transformation ::= "selectScenario" "(" [ScenarioId] ")" ; 
+EvaluateAdvice. Transformation ::= "evaluateAdvice" "(" [AdviceId] ")"   ;
+BindParameter.  Transformation ::= "bindParameter" "("  Ident "," Ident ")"; 

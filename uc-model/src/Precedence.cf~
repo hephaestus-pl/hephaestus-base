@@ -1,0 +1,2 @@
+TPrecedenceModel. PrecedenceModel ::= "declare" "precedence" ":" [AdvList]
+

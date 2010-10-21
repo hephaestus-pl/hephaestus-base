@@ -1,0 +1,28 @@
+\begin{code}
+
+module EShopConfigurationKnowledge
+where
+
+import EShopFeatureModel
+import EshopUseCaseModel
+
+import ConfigurationKnowledge.Types
+import ConfigurationKnowledge.Interpreter
+import UseCaseModel.Transformations
+
+c1,c2 :: Configuration
+
+c1 = Configuration (FeatureRef "eShop") (selectScenarios ["SC01"])
+c2 = Configuration (FeatureRef "ShippingMethod") (bindParameter "SM", "ShippingMethod")
+
+ck :: ConfigurationKnowledge
+
+eShopCK = [c1, c2]
+
+iModel01, iModel02 :: InstanceModel
+
+iModel01 = build eShopFM eShopFC01 eShopCK eShopUCM
+imodel02 = build eShopFM eShopFC02 eShopCK eShopUCM
+
+
+\end{code}

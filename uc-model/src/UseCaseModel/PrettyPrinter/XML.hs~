@@ -1,0 +1,10 @@
+module UseCaseModel.PrettyPrinter.XML where
+
+import UseCaseModel.Types
+
+ucmToXML :: UseCaseModel -> Doc
+ucmToXML (UCM name ucs as) =  vcat [  text "<phone>"
+                                    , ucsToXML ucs
+                                    , text "</phone">
+                                    ]
+

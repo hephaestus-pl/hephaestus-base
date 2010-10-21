@@ -1,0 +1,4 @@
+module GenericHXTParser 
+where 
+
+import Text.XML.HXT.Arrow
