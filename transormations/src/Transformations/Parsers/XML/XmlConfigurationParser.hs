@@ -16,7 +16,7 @@ where
 
 import BasicTypes 
 
-import Text.XML.HXT.Arrow
+import Text.XML.HXT.Core
 import System.Environment
 
 import Transformations.Parsers.XML.XmlConfigurationKnowledge

@@ -19,7 +19,7 @@ where
 import BasicTypes
 import UseCaseModel.Parsers.XML.XmlUseCaseModel
 
-import Text.XML.HXT.Arrow
+import Text.XML.HXT.Core
 import System.Environment
 
 -- | Parse a use case file, returning the corresponding use case model.

@@ -18,7 +18,7 @@ import BasicTypes
 
 import RequirementModel.Types
 
-import Text.XML.HXT.Arrow
+import Text.XML.HXT.Core
 import System.Environment
 
 -- | 

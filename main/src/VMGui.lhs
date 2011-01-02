@@ -16,7 +16,7 @@ import System
 import qualified Data.Tree as Tree
 import Control.Concurrent
 
-import Text.XML.HXT.Arrow
+import Text.XML.HXT.Core
 
 import System.Environment
 import System.Directory

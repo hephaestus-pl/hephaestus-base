@@ -13,7 +13,7 @@ import UseCaseModel.Types
 import FeatureModel.Parsers.Expression
 import FeatureModel.Types hiding (Success,Fail)
 
-import Text.XML.HXT.Arrow
+import Text.XML.HXT.Core
 
 import Text.ParserCombinators.Parsec
 import qualified Text.ParserCombinators.Parsec.Token as P

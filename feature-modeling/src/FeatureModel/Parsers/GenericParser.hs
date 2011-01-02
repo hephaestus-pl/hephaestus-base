@@ -35,7 +35,7 @@ import Text.ParserCombinators.Parsec
 import qualified Text.ParserCombinators.Parsec.Token as P
 import Text.ParserCombinators.Parsec.Language( haskellStyle )
 
-import Text.XML.HXT.Arrow
+import Text.XML.HXT.Core
 
 data FmFormat = FMPlugin | FMIde | FMGrammar | SXFM
 

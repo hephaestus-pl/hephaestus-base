@@ -1,7 +1,7 @@
 \begin{code}
 module FeatureModel.Parsers.FMPlugin.XmlFeatureParser where
 
-import Text.XML.HXT.Arrow
+import Text.XML.HXT.Core
 import System.Environment
 
 import qualified FeatureModel.Types as Base
