@@ -1,0 +1,48 @@
+Ok, I know that I should have already cabalized Hephaestus. 
+
+But I didn't have enough time after I concluded my thesis. This activity 
+was postponed to a near future (I hope). 
+
+Until there, Hephaestus was successfully compiled using:
+
+* GHC-6.12.3
+* Haskell platform
+
+External dependencies:
+
+* QuickCheck-1.2.0.1
+* bimap-0.2.4
+* binary-0.5.0.2
+* bitset-0.6
+* funsat-0.6.0
+* hxt-9.0.1
+* hxt-charproperties-9.0.0
+* hxt-regex-xmlschema-9.0.0
+* hxt-unicode-9.0.0
+* parse-dimacs-1.2
+* parsec-3.1.0
+
+It is important to note that, after installing the Haskell Platform, we 
+could easly install this dependencies using caball install. Only the following 
+*top level* packages have to be installed. So, try this:
+
+$ cabal install funsat-0.6.0
+$ cabal install hxt
+
+It is also necessary to install gtk2hs into your system. See the 
+following link for further details:
+
+* http://www.haskell.org/haskellwiki/Gtk2Hs 
+
+Recent versions of gtk2hs have also been cabalized. So, you might be able 
+to install gtk2hs (and related tools) using the following sequence of 
+commands
+
+$ cabal install gtk2hs-buildtools
+$ cabal install glib
+$ cabal install gtk
+$ cabal install glade
+
+Enjoy!!!
+
+Rodrigo Bonifacio (rbonifacio@computer.org) 
