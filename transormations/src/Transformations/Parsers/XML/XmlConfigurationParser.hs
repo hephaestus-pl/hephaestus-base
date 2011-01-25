@@ -17,6 +17,8 @@ where
 import BasicTypes 
 
 import Text.XML.HXT.Core
+import Text.XML.HXT.RelaxNG
+
 import System.Environment
 
 import Transformations.Parsers.XML.XmlConfigurationKnowledge
@@ -42,9 +44,9 @@ checkConfigurationFile schema fileName =
  do 
    errs <- runX ( errorMsgCollect 
                   >>> 
-                  readDocument [(a_validate, v_0)
-                               ,(a_relax_schema, (createURI schema))
-                               ,(a_issue_errors, "0")                              
+                  readDocument [ withValidate yes
+                               , withRelaxNG (createURI schema)
+                               , withErrors yes                              
                                ] (createURI fileName)
                   >>>
                   getErrorMessages
@@ -53,10 +55,10 @@ checkConfigurationFile schema fileName =
 
 parseConfigurationKnowledge' fileName = 
  do
-   c <- runX ( xunpickleDocument xpConfigurationKnowledge [ (a_validate,v_0)
- 				                          , (a_trace, v_1)
- 				                          , (a_remove_whitespace,v_1)
- 				                          , (a_preserve_comment, v_0)
+   c <- runX ( xunpickleDocument xpConfigurationKnowledge [ withValidate yes
+ 				                          , withTrace 1
+ 				                          , withRemoveWS yes
+ 				                          , withPreserveComment yes
                                                           ] (createURI fileName) )
    case c of 
      [x] -> return $ (xml2ConfigurationKnowledge x)

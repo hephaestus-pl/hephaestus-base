@@ -36,6 +36,7 @@ import qualified Text.ParserCombinators.Parsec.Token as P
 import Text.ParserCombinators.Parsec.Language( haskellStyle )
 
 import Text.XML.HXT.Core
+import Text.XML.HXT.RelaxNG
 
 data FmFormat = FMPlugin | FMIde | FMGrammar | SXFM
 
@@ -85,11 +86,11 @@ parseInstanceModel schema fileName =
   
 parseInstanceModel' fileName = 
  do 
-   i <- runX ( xunpickleDocument xpFeatureConfiguration [ (a_validate,v_0)
- 					                  , (a_trace, v_1)
- 					                  , (a_remove_whitespace,v_1)
- 					                  , (a_preserve_comment, v_0)
- 					                  ] (Core.createURI fileName) )
+   i <- runX ( xunpickleDocument xpFeatureConfiguration [ withValidate yes
+							, withTrace 1
+ 					               	, withRemoveWS yes
+ 					               	, withPreserveComment yes
+ 					               	] (Core.createURI fileName) )
    case i of 
     [x] -> do return $ Core.Success (xml2FeatureConfiguration x)
     otherwise -> return $ Core.Fail "Error parsing instance configuration. Try to check it before parsing."
@@ -107,10 +108,10 @@ translateFMPToFm schema fileName =
    case errs of 
      [] -> 
          do 
-          u <- runX ( xunpickleDocument xpFeature [ (a_validate,v_0)
-                                                  , (a_trace, v_1)
-                                                  , (a_remove_whitespace,v_1)
-                                                  , (a_preserve_comment, v_0)
+          u <- runX ( xunpickleDocument xpFeature [ withValidate yes
+                                                  , withTrace 1
+                                                  , withRemoveWS yes
+                                                  , withPreserveComment yes
                                                   ] (Core.createURI fileName));
           case u of 
             [x] -> return $ Core.Success (FeatureModel { fmTree = (xmlFeature2FeatureTree x), fmConstraints = [] })
@@ -123,9 +124,9 @@ checkXMLFile schema fileName =
  do 
    errs <- runX ( errorMsgCollect 
                   >>> 
-                  readDocument [(a_validate, v_0)
-                               ,(a_relax_schema, (Core.createURI schema))
-                               ,(a_issue_errors, "0")                              
+                  readDocument [ withValidate yes
+                               , withRelaxNG (Core.createURI schema)
+                               , withErrors yes
                                ] (Core.createURI fileName)
                   >>>
                   getErrorMessages

@@ -28,6 +28,7 @@ could easly install this dependencies using caball install. Only the following
 
 $ cabal install funsat-0.6.0
 $ cabal install hxt
+$ cabal install hxt-relaxng
 
 It is also necessary to install gtk2hs into your system. See the 
 following link for further details:
@@ -42,6 +43,9 @@ $ cabal install gtk2hs-buildtools
 $ cabal install glib
 $ cabal install gtk
 $ cabal install glade
+
+After resolving all dependencies, you could build Hephaestus by running 
+the compile script (see the main folder).
 
 Enjoy!!!
 

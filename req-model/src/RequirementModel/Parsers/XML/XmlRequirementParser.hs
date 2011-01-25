@@ -19,6 +19,8 @@ import BasicTypes
 import RequirementModel.Types
 
 import Text.XML.HXT.Core
+import Text.XML.HXT.RelaxNG
+
 import System.Environment
 
 -- | 
@@ -42,9 +44,9 @@ checkRequirementFile schema fileName =
  do 
    errs <- runX ( errorMsgCollect 
                   >>> 
-                  readDocument [(a_validate, v_0)
-                               ,(a_relax_schema, (createURI schema))
-                               ,(a_issue_errors, "0")                              
+                  readDocument [ withValidate yes
+                               , withRelaxNG (createURI schema)
+                               , withErrors yes                              
                                ] (createURI fileName)
                   >>>
                   getErrorMessages
@@ -53,10 +55,10 @@ checkRequirementFile schema fileName =
 
 parseRequirementModel' fileName = 
  do
-   c <- runX ( xunpickleDocument xpRequirementModel [ (a_validate,v_0)
- 				                    , (a_trace, v_1)
- 				                    , (a_remove_whitespace,v_1)
- 				                    , (a_preserve_comment, v_0)
+   c <- runX ( xunpickleDocument xpRequirementModel [ withValidate yes
+ 				                    , withTrace 1
+ 				                    , withRemoveWS yes
+ 				                    , withPreserveComment yes
                                                     ] (createURI fileName) )
    case c of 
      [x] -> return $ Success x

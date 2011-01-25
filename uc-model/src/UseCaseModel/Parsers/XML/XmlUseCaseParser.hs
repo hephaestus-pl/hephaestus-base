@@ -20,6 +20,9 @@ import BasicTypes
 import UseCaseModel.Parsers.XML.XmlUseCaseModel
 
 import Text.XML.HXT.Core
+import Text.XML.HXT.RelaxNG
+
+
 import System.Environment
 
 -- | Parse a use case file, returning the corresponding use case model.
@@ -47,9 +50,9 @@ checkUseCaseFile schema fileName =
  do 
    errs <- runX ( errorMsgCollect 
                   >>> 
-                  readDocument [(a_validate, v_0)
-                               ,(a_relax_schema, (createURI schema))
-                               ,(a_issue_errors, "0")                              
+                  readDocument [ withValidate yes
+                               , withRelaxNG (createURI schema)
+                               , withErrors yes                              
                                ] (createURI fileName)
                   >>>
                   getErrorMessages
@@ -60,10 +63,10 @@ checkUseCaseFile schema fileName =
  
 parseUseCaseFile' fileName = 
  do
-   [x] <- runX ( xunpickleDocument xpPhone [ (a_validate,v_0)
- 					   , (a_trace, v_1)
- 					   , (a_remove_whitespace,v_1)
- 					   , (a_preserve_comment, v_0)
+   [x] <- runX ( xunpickleDocument xpPhone [ withValidate yes
+ 					   , withTrace 1
+ 					   , withRemoveWS yes
+ 					   , withPreserveComment yes
  					   ] (createURI fileName) )
    let ucmodel = xmlUseCaseModel2UseCaseModel (head (ucms x))
    return ucmodel
