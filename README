@@ -23,7 +23,7 @@ External dependencies:
 * parsec-3.1.0
 
 It is important to note that, after installing the Haskell Platform, we 
-could easly install this dependencies using caball install. Only the following 
+could easly install these dependencies using caball install. Only the following 
 *top level* packages have to be installed. So, try this:
 
 $ cabal install funsat-0.6.0

@@ -1,7 +1,7 @@
-<phone xmlns="user-view.target.v20090401">
+<phone>
 	<feature>
-		<featureId>01</featureId>
-		<name>Banking Automation Product Line</name>
+	  <featureId>F01</featureId>
+	  <name>Banking Automation Product Line</name>
 		<useCase>
 			<id>UC01</id>
 			<name>User transactions.</name>
