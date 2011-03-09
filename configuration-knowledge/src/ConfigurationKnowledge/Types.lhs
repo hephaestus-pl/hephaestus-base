@@ -20,8 +20,10 @@ import Data.Generics
 
 import BasicTypes
 import ComponentModel.Types
+import BusinessProcess.Types
 import UseCaseModel.Types
 import RequirementModel.Types
+
 import FeatureModel.Types (FeatureModel, FeatureConfiguration, FeatureExpression)
 
 -- | A type that characterizes an initial representation  
@@ -31,7 +33,8 @@ data SPLModel = SPLModel {
       splFM  :: FeatureModel,
       splReq :: RequirementModel,  
       splUCM :: UseCaseModel, 
-      splMappings :: ComponentModel 
+      splMappings :: ComponentModel, 
+      splBPM :: BusinessProcessModel
 } 
           
 -- | A type for instances of an SPL. Note that, in this 
@@ -42,9 +45,10 @@ data InstanceModel = InstanceModel {
       fc  :: FeatureConfiguration,
       req :: RequirementModel,   
       ucm :: UseCaseModel, 
+      bpm :: BusinessProcessModel,
       components :: [(Id, Id)], 
       buildEntries :: [String],
-	  preProcessFiles :: [String]
+      preProcessFiles :: [String]
 } deriving (Data, Typeable)
                   
 
@@ -52,14 +56,25 @@ data InstanceModel = InstanceModel {
 -- Defines three levels of priority. 
 -- Useful for ordering transformations.
 -- 
-data Priority = High | Medium | Low
+data Priority = Low | Medium | High
+ deriving (Eq, Ord)
 
+         
 -- | The transformation class defines a family of 
 --   functions that, given an SPL and an Instance Model, 
 --   apply some kind of transfomation to the instance model 
---   and then returns a refined version of it. 
+--   and then returns one refined version.
+-- class (Show t, Ord t) => Transformation t  where 
 class (Show t) => Transformation t  where 
- (<+>) :: t -> SPLModel  -> InstanceModel -> InstanceModel 
+ (<+>) :: t -> SPLModel  -> InstanceModel -> InstanceModel  
+-- priority :: t -> Priority 
+   
+   -- a default implementation of the compare function, 
+   -- based on the priorities of each transformation. 
+   -- in this way, developers just have to implement 
+   -- the priority function. Unfournatly, I think this is not 
+   -- possible.
+   -- compare x y = (compare (priority x) (priority y)) 
 
 -- | A single configuration item. The idea is that, after 
 --   evaluating each of the applicable configuration items, 

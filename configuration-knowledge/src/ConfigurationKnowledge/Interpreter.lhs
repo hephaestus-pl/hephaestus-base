@@ -18,6 +18,7 @@ module ConfigurationKnowledge.Interpreter (build)
 where
 
 import UseCaseModel.Types
+import BusinessProcess.Types
 import RequirementModel.Types
 import ConfigurationKnowledge.Types
 import FeatureModel.Types (FeatureModel, FeatureConfiguration, eval)
@@ -36,9 +37,11 @@ build fm fc ck spl = stepRefinement ts spl emptyInstance
  where 
   ts            = tasks ck fc
   ucmodel       = splUCM spl
+  bpmodel       = splBPM spl
   emptyUCM      = ucmodel { useCases = [] , aspects = [] }
+  emptyBPM      = bpmodel { processes = [] }
   emptyReq      = RM { reqs = [] }
-  emptyInstance = InstanceModel fc emptyReq emptyUCM [] [] []
+  emptyInstance = InstanceModel fc emptyReq emptyUCM emptyBPM [] [] []
  	
 tasks :: ConfigurationKnowledge -> FeatureConfiguration -> [GenT]
 tasks ck fc = concat [transformations c | c <- ck, eval fc (expression c)]

@@ -35,9 +35,10 @@ instance Transformation SelectComponents where
         in case scs of 
          [] -> product 
          otherwise -> product { components = ics ++ scs }
-
+  
 instance Show SelectComponents where 
  show (SelectComponents ids) = "selectComponents " ++ (show ids) 
+
 
 -- | This datatype represents a transformation 
 --   that retrieves and changes the the relative path of a component. 

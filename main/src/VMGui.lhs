@@ -31,6 +31,8 @@ import UseCaseModel.PrettyPrinter.Latex
 import UseCaseModel.Parsers.XML.XmlUseCaseParser (parseUseCaseFile)
 import UseCaseModel.Types
 
+import BusinessProcess.Types
+
 import FeatureModel.Types
 import FeatureModel.Parsers.GenericParser 
 
@@ -240,7 +242,7 @@ weaveFiles gui store =
      (Core.Success rm, Core.Success um, Core.Success cm, Core.Success fm, Core.Success im, Core.Success ck) -> 
          do    
            let fc  = FeatureConfiguration im
-           let spl = SPLModel fm rm um cm 
+           let spl = SPLModel fm rm um cm (BPM []) 
            let product = build fm fc ck spl
            exportResult gui product 
 
