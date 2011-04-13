@@ -108,7 +108,10 @@ data XMLTask = XMLTask {
 data XMLStartState = XMLStartState {
     ssName :: Maybe String,
     ssSwimLane :: Maybe String,
-    ssTask :: Maybe XMLTask
+    ssTask :: Maybe XMLTask,
+    ssTransitions :: [XMLTransition],
+    ssEvents :: [XMLEvent],
+    ssExceptionHandlers :: [XMLExceptionHandler]
 } deriving (Eq, Show)
 
 data XMLTransition = XMLTransition {
@@ -229,9 +232,9 @@ data XMLSuperState = XMLSuperState {
 data XMLProcessDefinition = XMLProcessDefinition {
     pdName :: Maybe String,
     pdActions :: [XMLAction],
-    pdSwimlanes :: [XMLSwimLane]{-,
+    pdSwimlanes :: [XMLSwimLane],
     pdStartState :: XMLStartState,
-    pdStates :: [XMLState],
+    pdStates :: [XMLState]{-,
     pdTaskNodes :: [XMLTaskNode],
     pdSuperStates :: [XMLSuperState],
     pdProcessStates :: [XMLProcessState],
@@ -251,14 +254,24 @@ data XMLProcessDefinition = XMLProcessDefinition {
 
 {- Utilities -}
 
+
 uncurry19 :: (a -> b -> c -> d -> e -> f -> g -> h -> i -> j -> k -> l -> m -> n -> o -> p -> q -> r -> s -> t) -> (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s) -> t
 uncurry19 u ~(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s)	= u a b c d e f g h i j k l m n o p q r s
 
-uncurry5 :: (a -> b -> c -> d -> e -> f) -> (a, b, c, d, e) -> f
-uncurry5 fn (a, b, c, d, e) = fn a b c d e
+uncurry12 :: (a -> b -> c -> d -> e -> f -> g -> h -> i -> j -> k -> l -> m)  -> (a, b, c, d, e, f, g, h, i, j, k, l) -> m
+uncurry12 fn (a, b, c, d, e, f, g, h, i, j, k, l)	= fn a b c d e f g h i j k l
+
+uncurry9 :: (a -> b -> c -> d -> e -> f -> g -> h -> i -> j) -> (a, b, c, d, e, f, g, h, i) -> j
+uncurry9 fn (a, b, c, d, e, f, g, h, i)	= fn a b c d e f g h i
+
+uncurry7 :: (a -> b -> c -> d -> e -> f -> g -> h) -> (a, b, c, d, e, f, g) -> h
+uncurry7 fn (a, b, c, d, e, f, g)	= fn a b c d e f g
 
 uncurry6 :: (a -> b -> c -> d -> e -> f -> g) -> (a, b, c, d, e, f) -> g
 uncurry6 fn (a, b, c, d, e, f) = fn a b c d e f
+
+uncurry5 :: (a -> b -> c -> d -> e -> f) -> (a, b, c, d, e) -> f
+uncurry5 fn (a, b, c, d, e) = fn a b c d e
 
 {------------Picklers ------------------}
 
@@ -299,18 +312,24 @@ instance XmlPickler XMLTimer where
 instance XmlPickler XMLExceptionHandler where
     xpickle = xpXMLExceptionHandler
 
+instance XmlPickler XMLTask where
+    xpickle = xpXMLTask
+
+
+instance XmlPickler XMLStartState where
+    xpickle = xpXMLStartState
 
 xpXMLProcessDefinition :: PU XMLProcessDefinition
 
 xpXMLProcessDefinition = xpElem "process-definition" $
                          xpWrap (
-                                    uncurry3 XMLProcessDefinition,
+                                    uncurry5 XMLProcessDefinition,
                                     \ t -> (
                                             pdName t,
                                             pdActions t ,
-                                            pdSwimlanes t{-,
+                                            pdSwimlanes t,
                                             pdStartState t,
-                                            pdStates t,
+                                            pdStates t{-,
                                             pdTaskNodes t,
                                             pdSuperStates t,
                                             pdProcessStates t,
@@ -327,9 +346,11 @@ xpXMLProcessDefinition = xpElem "process-definition" $
                                             pdExceptionHandlers t-}
                                             )
                                  ) $
-                         xpTriple   (xpOption $ xpAttr "name" xpText0)
-                                    (xpList  xpXMLAction)
-                                    (xpList  xpXMLSwimLane)
+                         xp5Tuple   (xpOption $ xpAttr "name" xpText0)
+                                    (xpList     xpXMLAction)
+                                    (xpList     xpXMLSwimLane)
+                                    (xpXMLStartState)
+                                    (xpList xpXMLState)
 
 
 xpXMLSwimLane :: PU XMLSwimLane
@@ -511,3 +532,107 @@ xpXMLExceptionHandler = xpElem "exception-handler" $
                                   --(xpList xpChoice xpXMLAction xpXMLScript)--xpChoice
                                   (xpList xpXMLAction)
                                   (xpList xpXMLScript)
+
+
+xpXMLTask :: PU XMLTask
+xpXMLTask = xpElem "task" $
+            xpWrap (
+                        uncurry12 XMLTask,
+                        \ t -> (
+                                tBlocking t,
+                                tDescription t,
+                                tDuedate t,
+                                tName t,
+                                tPriority t,
+                                tSignalling t,
+                                tSwimlane t,
+                                tAssignment t,
+                                tController t,
+                                tEvents t,
+                                tTimers t,
+                                tExceptionHandlers t
+                             )
+                    ) $
+            xp12Tuple   (xpOption $ xpAttr "blocking" xpText0)
+                        (xpOption $ xpAttr "description" xpText0)
+                        (xpOption $ xpAttr "duedate" xpText0)
+                        (xpOption $ xpAttr "name" xpText0)
+                        (xpOption $ xpAttr "priority" xpText0)
+                        (xpOption $ xpAttr "signalling" xpText0)
+                        (xpOption $ xpAttr "swimlane" xpText0)
+                        (xpOption xpXMLAssignment)
+                        (xpOption xpXMLController)
+                        (xpList xpXMLEvent)
+                        (xpList xpXMLTimer)
+                        (xpList xpXMLExceptionHandler)
+
+
+xpXMLStartState :: PU XMLStartState
+xpXMLStartState =   xpElem "start-state" $
+                    xpWrap (
+                            uncurry6 XMLStartState,
+                            \ t ->  (
+                                        ssName t,
+                                        ssSwimLane t,
+                                        ssTask t,
+                                        ssTransitions t,
+                                        ssEvents t,
+                                        ssExceptionHandlers t
+                                    )
+                           ) $
+                    xp6Tuple    (xpOption $ xpAttr "name" xpText0)
+                                (xpOption $ xpAttr "swimlane" xpText0)
+                                (xpOption xpXMLTask)
+                                (xpList xpXMLTransition)
+                                (xpList xpXMLEvent)
+                                (xpList xpXMLExceptionHandler)
+
+
+xpXMLTransition :: PU XMLTransition
+xpXMLTransition =   xpElem "transition" $
+                    xpWrap (
+                            uncurry7 XMLTransition,
+                            \ t ->  (
+                                        trName t,
+                                        trTo t,
+                                        trActions t,
+                                        trScripts t,
+                                        trCreateTimers t,
+                                        trCancelTimers t,
+                                        trExceptionHandlers t
+                                    )
+                           ) $
+                    xp7Tuple    (xpOption $ xpAttr "name" xpText0)
+                                (xpOption $ xpAttr "to" xpText0)
+                                (xpList xpXMLAction)
+                                (xpList xpXMLScript)
+                                (xpList xpXMLCreateTimer)
+                                (xpList xpXMLCancelTimer)
+                                (xpList xpXMLExceptionHandler)
+
+
+xpXMLState :: PU XMLState
+xpXMLState =   xpElem "state" $
+                    xpWrap (
+                            uncurry9 XMLState,
+                            \ t ->  (
+                                        stName t,
+                                        stAction t,
+                                        stScript t,
+                                        stCreateTimer t,
+                                        stCancelTimer t,
+                                        stTransitions t,
+                                        stEvents t,
+                                        stTimers t,
+                                        stExceptionHandlers t
+                                    )
+                           ) $
+                    xp9Tuple    (xpOption $ xpAttr "name" xpText0)
+                                (xpOption xpXMLAction)
+                                (xpOption xpXMLScript)
+                                (xpOption xpXMLCreateTimer)
+                                (xpOption xpXMLCancelTimer)
+                                (xpList xpXMLTransition)
+                                (xpList xpXMLEvent)
+                                (xpList xpXMLTimer)
+                                (xpList xpXMLExceptionHandler)
