@@ -139,8 +139,8 @@ data XMLState = XMLState {
 data XMLTaskNode = XMLTaskNode {
     tnName :: Maybe String,
     tnSignal :: Maybe String,
-    tnCreateTasks :: Maybe Bool,
-    tnEndTasks :: Maybe Bool,
+    tnCreateTasks :: Maybe String,
+    tnEndTasks :: Maybe String,
     tnTasks :: [XMLTask],
     tnTransitions :: [XMLTransition],
     tnEvents :: [XMLEvent],
@@ -234,7 +234,7 @@ data XMLProcessDefinition = XMLProcessDefinition {
     pdActions :: [XMLAction],
     pdSwimlanes :: [XMLSwimLane],
     pdStartState :: XMLStartState,
-    pdStates :: [XMLState]{-,
+    pdStates :: [XMLState],
     pdTaskNodes :: [XMLTaskNode],
     pdSuperStates :: [XMLSuperState],
     pdProcessStates :: [XMLProcessState],
@@ -249,14 +249,16 @@ data XMLProcessDefinition = XMLProcessDefinition {
     pdTasks :: [XMLTask],
     pdEvents :: [XMLEvent],
     pdExceptionHandlers :: [XMLExceptionHandler]
-    -}
 } deriving (Eq, Show)
 
 {- Utilities -}
 
 
 uncurry19 :: (a -> b -> c -> d -> e -> f -> g -> h -> i -> j -> k -> l -> m -> n -> o -> p -> q -> r -> s -> t) -> (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s) -> t
-uncurry19 u ~(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s)	= u a b c d e f g h i j k l m n o p q r s
+uncurry19 fn (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s)	= fn a b c d e f g h i j k l m n o p q r s
+
+uncurry14 :: (a -> b -> c -> d -> e -> f -> g -> h -> i -> j -> k -> l -> m -> n -> o)  -> (a, b, c, d, e, f, g, h, i, j, k, l, m, n) -> o
+uncurry14 fn (a, b, c, d, e, f, g, h, i, j, k, l, m, n)	= fn a b c d e f g h i j k l m n
 
 uncurry12 :: (a -> b -> c -> d -> e -> f -> g -> h -> i -> j -> k -> l -> m)  -> (a, b, c, d, e, f, g, h, i, j, k, l) -> m
 uncurry12 fn (a, b, c, d, e, f, g, h, i, j, k, l)	= fn a b c d e f g h i j k l
@@ -315,21 +317,50 @@ instance XmlPickler XMLExceptionHandler where
 instance XmlPickler XMLTask where
     xpickle = xpXMLTask
 
-
 instance XmlPickler XMLStartState where
     xpickle = xpXMLStartState
+
+instance XmlPickler XMLTaskNode where
+    xpickle = xpXMLTaskNode
+
+instance XmlPickler XMLHandler where
+    xpickle = xpXMLHandler
+
+instance XmlPickler XMLDecision where
+    xpickle = xpXMLDecision
+
+instance XmlPickler XMLEndState where
+    xpickle = xpXMLEndState
+
+instance XmlPickler XMLFork where
+    xpickle = xpXMLFork
+
+instance XmlPickler XMLJoin where
+    xpickle = xpXMLJoin
+
+instance XmlPickler XMLNode where
+    xpickle = xpXMLNode
+
+instance XmlPickler XMLSubProcess where
+    xpickle = xpXMLSubProcess
+
+instance XmlPickler XMLProcessState where
+    xpickle = xpXMLProcessState
+
+instance XmlPickler XMLSuperState where
+    xpickle = xpXMLSuperState
 
 xpXMLProcessDefinition :: PU XMLProcessDefinition
 
 xpXMLProcessDefinition = xpElem "process-definition" $
                          xpWrap (
-                                    uncurry5 XMLProcessDefinition,
+                                    uncurry19 XMLProcessDefinition,
                                     \ t -> (
                                             pdName t,
-                                            pdActions t ,
+                                            pdActions t,
                                             pdSwimlanes t,
                                             pdStartState t,
-                                            pdStates t{-,
+                                            pdStates t,
                                             pdTaskNodes t,
                                             pdSuperStates t,
                                             pdProcessStates t,
@@ -343,15 +374,28 @@ xpXMLProcessDefinition = xpElem "process-definition" $
                                             pdCancelTimers t,
                                             pdTasks t,
                                             pdEvents t,
-                                            pdExceptionHandlers t-}
+                                            pdExceptionHandlers t
                                             )
                                  ) $
-                         xp5Tuple   (xpOption $ xpAttr "name" xpText0)
+                         xp19Tuple  (xpOption $ xpAttr "name" xpText0)
                                     (xpList     xpXMLAction)
                                     (xpList     xpXMLSwimLane)
                                     (xpXMLStartState)
                                     (xpList xpXMLState)
-
+                                    (xpList xpXMLTaskNode)
+                                    (xpList xpXMLSuperState)
+                                    (xpList xpXMLProcessState)
+                                    (xpList xpXMLNode)
+                                    (xpList xpXMLFork)
+                                    (xpList xpXMLJoin)
+                                    (xpList xpXMLDecision)
+                                    (xpList xpXMLEndState)
+                                    (xpList xpXMLScript)
+                                    (xpList xpXMLCreateTimer)
+                                    (xpList xpXMLCancelTimer)
+                                    (xpList xpXMLTask)
+                                    (xpList xpXMLEvent)
+                                    (xpList xpXMLExceptionHandler)
 
 xpXMLSwimLane :: PU XMLSwimLane
 xpXMLSwimLane = xpElem "swimlane" $
@@ -632,6 +676,216 @@ xpXMLState =   xpElem "state" $
                                 (xpOption xpXMLScript)
                                 (xpOption xpXMLCreateTimer)
                                 (xpOption xpXMLCancelTimer)
+                                (xpList xpXMLTransition)
+                                (xpList xpXMLEvent)
+                                (xpList xpXMLTimer)
+                                (xpList xpXMLExceptionHandler)
+
+
+xpXMLTaskNode:: PU XMLTaskNode
+xpXMLTaskNode =   xpElem "task-node" $
+                    xpWrap (
+                            uncurry9 XMLTaskNode,
+                            \ t ->  (
+                                        tnName t,
+                                        tnSignal t,
+                                        tnCreateTasks t,
+                                        tnEndTasks t,
+                                        tnTasks t,
+                                        tnTransitions t,
+                                        tnEvents t,
+                                        tnTimers t,
+                                        tnExceptionHandlers t
+                                    )
+                           ) $
+                    xp9Tuple    (xpOption $ xpAttr "name" xpText0)
+                                (xpOption $ xpAttr "signal" xpText0)
+                                (xpOption $ xpAttr "create-tasks" xpText0)
+                                (xpOption $ xpAttr "end-tasks" xpText0)
+                                (xpList xpXMLTask)
+                                (xpList xpXMLTransition)
+                                (xpList xpXMLEvent)
+                                (xpList xpXMLTimer)
+                                (xpList xpXMLExceptionHandler)
+
+xpXMLHandler :: PU XMLHandler
+xpXMLHandler =  xpElem "handler" $
+                    xpWrap (
+                             uncurry XMLHandler ,
+                             \ t -> (
+                                     hClass t,
+                                     hConfigType t
+                                    )
+                            ) $
+                    xpPair  (xpAttr "class" xpText0)
+                            (xpOption $ xpAttr "config-type" xpText0)
+
+xpXMLSubProcess :: PU XMLSubProcess
+xpXMLSubProcess =  xpElem "sub-process" $
+                    xpWrap (
+                             uncurry XMLSubProcess ,
+                             \ t -> (
+                                     sbName t,
+                                     sbVersion t
+                                    )
+                            ) $
+                    xpPair  (xpAttr "name" xpText0)
+                            (xpOption $ xpAttr "version" xpPrim)
+
+xpXMLEndState :: PU XMLEndState
+xpXMLEndState =  xpElem "end-state" $
+                    xpWrap (
+                             uncurry3 XMLEndState ,
+                             \ t -> (
+                                     esName t,
+                                     esEvents t,
+                                     esExceptionHandlers t
+                                    )
+                            ) $
+                    xpTriple    (xpOption $ xpAttr "name" xpText0)
+                                (xpList xpXMLEvent)
+                                (xpList xpXMLExceptionHandler)
+
+xpXMLDecision :: PU XMLDecision
+xpXMLDecision =  xpElem "decision" $
+                    xpWrap (
+                             uncurry6 XMLDecision ,
+                             \ t -> (
+                                        dName t,
+                                        dHandler t,
+                                        dTransitions t,
+                                        dEvents t,
+                                        dTimers t,
+                                        dExceptionHandlers t
+                                    )
+                            ) $
+                    xp6Tuple    (xpAttr "name" xpText0)
+                                (xpOption $ xpXMLHandler)
+                                (xpList xpXMLTransition)
+                                (xpList xpXMLEvent)
+                                (xpList xpXMLTimer)
+                                (xpList xpXMLExceptionHandler)
+
+
+xpXMLFork :: PU XMLFork
+xpXMLFork =  xpElem "fork" $
+                    xpWrap (
+                             uncurry6 XMLFork ,
+                             \ t -> (
+                                        fName t,
+                                        fScript t,
+                                        fTransitions t,
+                                        fEvents t,
+                                        fTimers t,
+                                        fExceptionHandlers t
+                                    )
+                            ) $
+                    xp6Tuple    (xpOption $ xpAttr "name" xpText0)
+                                (xpOption $ xpXMLScript)
+                                (xpList xpXMLTransition)
+                                (xpList xpXMLEvent)
+                                (xpList xpXMLTimer)
+                                (xpList xpXMLExceptionHandler)
+
+xpXMLJoin :: PU XMLJoin
+xpXMLJoin =  xpElem "join" $
+                    xpWrap (
+                             uncurry5 XMLJoin ,
+                             \ t -> (
+                                        jName t,
+                                        jTransitions t,
+                                        jEvents t,
+                                        jTimers t,
+                                        jExceptionHandlers t
+                                    )
+                            ) $
+                    xp5Tuple    (xpAttr "name" xpText0)
+                                (xpList xpXMLTransition)
+                                (xpList xpXMLEvent)
+                                (xpList xpXMLTimer)
+                                (xpList xpXMLExceptionHandler)
+
+
+xpXMLNode :: PU XMLNode
+xpXMLNode =  xpElem "node" $
+                    xpWrap (
+                             uncurry9 XMLNode ,
+                             \ t -> (
+                                        nName t,
+                                        nAction t,
+                                        nScript t,
+                                        nCreateTimer t,
+                                        nCancelTimer t,
+                                        nTransitions t,
+                                        nEvents t,
+                                        nTimers t,
+                                        nExceptionHandlers t
+                                    )
+                            ) $
+                    xp9Tuple    (xpAttr "name" xpText0)
+                                (xpOption $ xpXMLAction)
+                                (xpOption $ xpXMLScript)
+                                (xpOption $ xpXMLCreateTimer)
+                                (xpOption $ xpXMLCancelTimer)
+                                (xpList xpXMLTransition)
+                                (xpList xpXMLEvent)
+                                (xpList xpXMLTimer)
+                                (xpList xpXMLExceptionHandler)
+
+xpXMLProcessState :: PU XMLProcessState
+xpXMLProcessState =  xpElem "process-state" $
+                    xpWrap (
+                             uncurry7 XMLProcessState ,
+                             \ t -> (
+                                        psName t,
+                                        psSubProcess t,
+                                        psVariabes t,
+                                        psTransitions t,
+                                        psEvents t,
+                                        psTimers t,
+                                        psExceptionHandlers t
+                                    )
+                            ) $
+                    xp7Tuple    (xpAttr "name" xpText0)
+                                (xpOption $ xpXMLSubProcess)
+                                (xpList xpXMLVariable)
+                                (xpList xpXMLTransition)
+                                (xpList xpXMLEvent)
+                                (xpList xpXMLTimer)
+                                (xpList xpXMLExceptionHandler)
+
+
+xpXMLSuperState :: PU XMLSuperState
+xpXMLSuperState =  xpElem "super-state" $
+                    xpWrap (
+                             uncurry14 XMLSuperState ,
+                             \ t -> (
+                                        spName t,
+                                        spStates t,
+                                        spTaskNodes t,
+                                        spSuperStates t,
+                                        spProcessStates t,
+                                        spNodes t,
+                                        spForks t,
+                                        spJoins t,
+                                        spDecicision t,
+                                        spEndStates t,
+                                        spTransitions t,
+                                        spEvents t,
+                                        spTimers t,
+                                        spExceptionHandlers t
+                                    )
+                            ) $
+                    xp14Tuple   (xpOption $ xpAttr "name" xpText0)
+                                (xpList xpXMLState)
+                                (xpList xpXMLTaskNode)
+                                (xpList xpXMLSuperState)
+                                (xpList xpXMLProcessState)
+                                (xpList xpXMLNode)
+                                (xpList xpXMLFork)
+                                (xpList xpXMLJoin)
+                                (xpList xpXMLDecision)
+                                (xpList xpXMLEndState)
                                 (xpList xpXMLTransition)
                                 (xpList xpXMLEvent)
                                 (xpList xpXMLTimer)
