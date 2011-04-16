@@ -22,6 +22,7 @@ import BusinessProcess.Types
 import RequirementModel.Types
 import ConfigurationKnowledge.Types
 import FeatureModel.Types (FeatureModel, FeatureConfiguration, eval)
+import FeatureModel.FCTypeChecker (validInstance')
 
 -- | Instantiates a product from the input models. 
 --   In more details, it calls each transformation ('tasks', obtained 

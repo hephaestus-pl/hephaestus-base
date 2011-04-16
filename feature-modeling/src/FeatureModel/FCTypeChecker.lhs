@@ -18,8 +18,8 @@ each constraint of the feature model must be considered by
 the configuration. 
  
 \begin{code}
--- validInstance :: FeatureModel -> FeatureConfiguration -> [ErrorMessage]
--- validInstance fm fc = 
+--validInstance :: FeatureModel -> FeatureConfiguration -> [ErrorMessage]
+--validInstance fm fc = 
 --  let f1 = fmTree fm
 --      f2 = fcTree fc
 --  in 
@@ -33,10 +33,10 @@ validInstance' fm fc =
 
 -- checkType :: FeatureModel -> [ErrorMessage]
 -- checkType fm = 
---  case fmTypeChecker fm of 
---   Success   -> []
---   Fail xs   -> [("Type checker of the feature model failed. " ++ show (xs))]
--- \end{code}
+-- case fmTypeChecker fm of 
+--  Success   -> [] 
+--  Fail xs   -> [("Type checker of the feature model failed. " ++ show (xs))]
+\end{code}
 
 -- The type checker for a selected feature \texttt{fc}
 -- verifies that it complies to the feature constraints 
