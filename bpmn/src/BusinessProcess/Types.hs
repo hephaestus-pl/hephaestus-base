@@ -1,9 +1,11 @@
 {-# OPTIONS -fglasgow-exts #-}
 module BusinessProcess.Types 
-(BusinessProcessModel(BPM),
- BusinessProcess,
+(BusinessProcessModel(BPM), 
+ BusinessProcess(BusinessProcess),
  FlowObject(FlowObject, Start, End, Proceed),
+ FlowObjectType(Activity,Gateway, Join),
  Transition,
+ ProcessType(BasicProcess),
  mkTransition,
  Condition,
  objects,
