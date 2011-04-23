@@ -230,25 +230,25 @@ data XMLSuperState = XMLSuperState {
 } deriving (Eq, Show)
 
 data XMLProcessDefinition = XMLProcessDefinition {
-    pdName :: Maybe String,
     pdActions :: [XMLAction],
-    pdSwimlanes :: [XMLSwimLane],
-    pdStartState :: XMLStartState,
-    pdStates :: [XMLState],
-    pdTaskNodes :: [XMLTaskNode],
-    pdSuperStates :: [XMLSuperState],
-    pdProcessStates :: [XMLProcessState],
-    pdNodes :: [XMLNode],
-    pdForks :: [XMLFork],
-    pdJoins :: [XMLJoin],
+    pdCancelTimers :: [XMLCancelTimer],
+    pdCreateTimers :: [XMLCreateTimer],
     pdDecicisions :: [XMLDecision],
     pdEndStates :: [XMLEndState],
-    pdScripts :: [XMLScript],
-    pdCreateTimers :: [XMLCreateTimer],
-    pdCancelTimers :: [XMLCancelTimer],
-    pdTasks :: [XMLTask],
     pdEvents :: [XMLEvent],
-    pdExceptionHandlers :: [XMLExceptionHandler]
+    pdExceptionHandlers :: [XMLExceptionHandler],
+    pdForks :: [XMLFork],
+    pdJoins :: [XMLJoin],
+    pdName :: Maybe String,
+    pdNodes :: [XMLNode],
+    pdProcessStates :: [XMLProcessState],
+    pdScripts :: [XMLScript],
+    pdStartState :: XMLStartState,
+    pdStates :: [XMLState],
+    pdSuperStates :: [XMLSuperState],
+    pdSwimlanes :: [XMLSwimLane],
+    pdTaskNodes :: [XMLTaskNode],
+    pdTasks :: [XMLTask]
 } deriving (Eq, Show)
 
 {- Utilities -}
@@ -356,46 +356,48 @@ xpXMLProcessDefinition = xpElem "process-definition" $
                          xpWrap (
                                     uncurry19 XMLProcessDefinition,
                                     \ t -> (
-                                            pdName t,
                                             pdActions t,
-                                            pdSwimlanes t,
-                                            pdStartState t,
-                                            pdStates t,
-                                            pdTaskNodes t,
-                                            pdSuperStates t,
-                                            pdProcessStates t,
-                                            pdNodes t,
-                                            pdForks t,
-                                            pdJoins t,
+                                            pdCancelTimers t,
+                                            pdCreateTimers t,
                                             pdDecicisions t,
                                             pdEndStates t,
-                                            pdScripts t,
-                                            pdCreateTimers t,
-                                            pdCancelTimers t,
-                                            pdTasks t,
                                             pdEvents t,
-                                            pdExceptionHandlers t
+                                            pdExceptionHandlers t,
+                                            pdForks t,
+                                            pdJoins t,
+                                            pdName t,
+                                            pdNodes t,
+                                            pdProcessStates t,
+                                            pdScripts t,
+                                            pdStartState t,
+                                            pdStates t,
+                                            pdSuperStates t,
+                                            pdSwimlanes t,
+                                            pdTaskNodes t,
+                                            pdTasks t
                                             )
                                  ) $
-                         xp19Tuple  (xpOption $ xpAttr "name" xpText0)
-                                    (xpList     xpXMLAction)
-                                    (xpList     xpXMLSwimLane)
-                                    (xpXMLStartState)
-                                    (xpList xpXMLState)
-                                    (xpList xpXMLTaskNode)
-                                    (xpList xpXMLSuperState)
-                                    (xpList xpXMLProcessState)
-                                    (xpList xpXMLNode)
-                                    (xpList xpXMLFork)
-                                    (xpList xpXMLJoin)
+                         xp19Tuple  (xpList xpXMLAction)
+                                    (xpList xpXMLCancelTimer)
+                                    (xpList xpXMLCreateTimer)
                                     (xpList xpXMLDecision)
                                     (xpList xpXMLEndState)
-                                    (xpList xpXMLScript)
-                                    (xpList xpXMLCreateTimer)
-                                    (xpList xpXMLCancelTimer)
-                                    (xpList xpXMLTask)
                                     (xpList xpXMLEvent)
                                     (xpList xpXMLExceptionHandler)
+                                    (xpList xpXMLFork)
+                                    (xpList xpXMLJoin)
+                                    (xpOption $ xpAttr "name" xpText0)
+                                    (xpList xpXMLNode)
+                                    (xpList xpXMLProcessState)
+                                    (xpList xpXMLScript)
+                                    (xpXMLStartState)
+                                    (xpList xpXMLState)
+                                    (xpList xpXMLSuperState)
+                                    (xpList xpXMLSwimLane)
+                                    (xpList xpXMLTaskNode)
+                                    (xpList xpXMLTask)
+
+
 
 xpXMLSwimLane :: PU XMLSwimLane
 xpXMLSwimLane = xpElem "swimlane" $

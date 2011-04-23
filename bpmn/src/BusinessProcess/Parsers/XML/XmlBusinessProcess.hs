@@ -37,25 +37,25 @@ findFlowObject flows name currentFlow | resultSet == [] = currentFlow
 {-Convert from JPDL BPM to Hepheastus BPM Model-}
 processDefinitionToBPM :: XMLProcessDefinition -> BusinessProcess
 
-processDefinitionToBPM (XMLProcessDefinition    pdName
-                                                pdActions
-                                                pdSwimlanes
-                                                pdStartState
-                                                pdStates
-                                                pdTaskNodes
-                                                pdSuperStates
-                                                pdProcessStates
-                                                pdNodes
-                                                pdForks
-                                                pdJoins
+processDefinitionToBPM (XMLProcessDefinition    pdActions
+                                                pdCancelTimers
+                                                pdCreateTimers
                                                 pdDecicisions
                                                 pdEndStates
-                                                pdScripts
-                                                pdCreateTimers
-                                                pdCancelTimers
-                                                pdTasks
                                                 pdEvents
-                                                pdExceptionHandlers) = (BusinessProcess (getMaybeString pdName) (BasicProcess) buildFlowObjects buildTransitions)
+                                                pdExceptionHandlers
+                                                pdForks
+                                                pdJoins
+                                                pdName
+                                                pdNodes
+                                                pdProcessStates
+                                                pdScripts
+                                                pdStartState
+                                                pdStates
+                                                pdSuperStates
+                                                pdSwimlanes
+                                                pdTaskNodes
+                                                pdTasks) = (BusinessProcess (getMaybeString pdName) (BasicProcess) buildFlowObjects buildTransitions)
                                                 where
                                                     {-Flow objects functions-}
                                                     buildFlowObjects = [Start] ++ (map fst concatFlowObjectsTuples) ++ [End]
