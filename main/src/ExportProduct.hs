@@ -1,4 +1,4 @@
-module ExportProduct (exportProduct, exportUcmToLatex, exportAspectInterfacesToLatex) where
+module ExportProduct (exportProduct, exportUcmToLatex, exportAspectInterfacesToLatex, exportSourceCode) where
 
 import IO
 import System
@@ -27,6 +27,10 @@ exportProduct s o p = do
   print "\n Copying source files to output directory \n"
   print $ map (++ "\n") [fst c | c <- components p]
   
+  exportSourceCode s o p
+
+exportSourceCode :: FilePath -> FilePath -> InstanceModel -> IO ()
+exportSourceCode s o p = do
   copySourceFiles s o (components p)
   exportBuildFile  (o ++ "/build.lst") (buildEntries p)
   preprocessFiles (o ++ "/build.lst") (preProcessFiles p) o
