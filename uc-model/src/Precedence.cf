@@ -1,5 +1,0 @@
-TPrecedenceModel. PrecedenceModel ::= "declare" "precedence" ":" [AdvId] ";" ;
-
-TAdvID. AdvId ::= Ident ;
-
-separator AdvId ","

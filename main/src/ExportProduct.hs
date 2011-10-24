@@ -7,7 +7,9 @@ import System.FilePath
 import System.Process
 import Control.Monad
 
-import ConfigurationKnowledge.Types
+import Ensemble.Types
+import ComponentModel.Types
+import SPL.Types
 import UseCaseModel.Types
 import UseCaseModel.PrettyPrinter.Latex
 import UseCaseModel.PrettyPrinter.LatexUserActions
@@ -16,24 +18,30 @@ import UseCaseModel.PrettyPrinter.XML
 import qualified BasicTypes as Core
 
 exportProduct :: FilePath -> FilePath -> InstanceModel -> IO ()
-exportProduct s o p = do
+exportProduct s o p = 
+ let 
+  ucmodel = ucModel $ instanceAssetBase p 
+  cmodel = components $ buildData $ instanceAssetBase p
+ in do
   print "\n Use cases... " 
-  print $ ucm p
+  print $ ucmodel
 
-  exportUcmToLatex (o ++ "/use-cases.tex") (ucm p)
-  exportUcmToLatexUserActions (o ++ "/simplified-use-cases.tex") (ucm p)
-  exportUcmToXML (o ++ "/use-cases.xml") (ucm p)
+  exportUcmToLatex (o ++ "/use-cases.tex") (ucmodel)
+  exportUcmToLatexUserActions (o ++ "/simplified-use-cases.tex") (ucmodel)
+  exportUcmToXML (o ++ "/use-cases.xml") (ucmodel)
 
   print "\n Copying source files to output directory \n"
-  print $ map (++ "\n") [fst c | c <- components p]
+  print $ map (++ "\n") [fst c | c <- cmodel]
   
   exportSourceCode s o p
 
 exportSourceCode :: FilePath -> FilePath -> InstanceModel -> IO ()
-exportSourceCode s o p = do
-  copySourceFiles s o (components p)
-  exportBuildFile  (o ++ "/build.lst") (buildEntries p)
-  preprocessFiles (o ++ "/build.lst") (preProcessFiles p) o
+exportSourceCode s o p = 
+ let bd = buildData $ instanceAssetBase p 
+ in do
+  copySourceFiles s o (components bd)
+  exportBuildFile  (o ++ "/build.lst") (buildEntries bd)
+  preprocessFiles (o ++ "/build.lst") (preProcessFiles bd) o
 
 
 preprocessFiles :: String -> [String] -> String -> IO()

@@ -49,7 +49,8 @@ two constructors: \texttt{Success} and \texttt{Fail}.
 
 \begin{code}
 type Root          = Feature            
-type Property      = (String, String)     
+type Property      = (String, String)  
+type FeatureValue  = String    
 type ErrorMessage  = String
 data CheckerResult = Success | Fail { errorList :: [ErrorMessage] } deriving (Show,Eq)
 \end{code}
@@ -116,6 +117,7 @@ data Feature = Feature {
 	fId :: Id, 
 	fName :: Name, 
 	fType :: FeatureType,
+        fValue :: FeatureValue,
 	groupType :: GroupType,
 	properties :: [Property]
  } | FeatureError    
@@ -427,6 +429,13 @@ findFeature f1 ft = findFeature' f1 (map fnode (flatten ft))
  where 
   findFeature' f1 [] = FeatureError  
   findFeature' f1 (x:xs) = if (f1 == x) then x else findFeature' f1 xs
+
+findFeatureById :: Id -> FeatureTree -> [Feature]
+findFeatureById fid ft = filter (\x -> fId x == fid) (map fnode $ flatten ft)  
+
+findFeatureTreeById :: Id -> FeatureTree -> [FeatureTree]
+findFeatureTreeById fid ft = filter (\x -> fId (fnode x) == fid) (flatten ft)
+
 \end{code}
 
 Bellow we present a few functions for peforming more specific 
@@ -508,7 +517,7 @@ featureOptionsPropertyValue pid ft =
 -- placede at this point.
 --
 instance Eq Feature where 
- Feature id1 _ _ _ _  == Feature id2 _ _ _ _  = id1 == id2
+ Feature id1 _ _ _ _ _  == Feature id2 _ _ _ _ _  = id1 == id2
  FeatureError == FeatureError = True
  FeatureError == _ = False
  _ == FeatureError = False 

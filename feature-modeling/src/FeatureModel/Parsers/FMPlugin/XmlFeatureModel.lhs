@@ -6,6 +6,7 @@ import BasicTypes
 
 import FeatureModel.Types
 
+type Value =  String
 type CMin = Int
 type CMax = Int 
 type XmlChildren = [XmlFeature]
@@ -32,23 +33,28 @@ data XmlGroupFeature = XmlGroupFeature {
 data XmlFeatureConfiguration = XmlFeatureConfiguration {
                 cId :: Id,
                 cName :: Name, 
+                cValue :: Maybe Value,
                 cChildren :: Maybe [XmlFeatureConfiguration] 
        } 
        deriving(Show)
 	
 xmlFeature2FeatureTree :: XmlFeature -> FeatureTree	
 xmlFeature2FeatureTree (XmlFeature fid cmin cmax name children group) = 
- let
-  f  =   Feature fid name (featureTypeFromCardinality cmin) (groupTypeFromXmlGroup group) []
-  cs =  (childrenFromXmlFeatureList children group)
- in case cs of
+ case cs of
      Nothing -> Leaf f 
      Just t  -> Root f t  
+ where 
+  f  =   Feature fid name cardinality value' group' []
+  cs =  (childrenFromXmlFeatureList children group)
+  cardinality = (featureTypeFromCardinality cmin)
+  value' = ""
+  group' = (groupTypeFromXmlGroup group)
 
+ 
 xml2FeatureConfiguration :: XmlFeatureConfiguration -> FeatureTree
-xml2FeatureConfiguration (XmlFeatureConfiguration i n c) = 
+xml2FeatureConfiguration (XmlFeatureConfiguration i n v c) = 
  let 
-   f = Feature i n Optional BasicFeature [] 
+   f = Feature i n Optional (xmlValue v) BasicFeature [] 
  in case c of   
   Nothing -> Leaf f
   Just cs -> Root f (map xml2FeatureConfiguration cs) 
@@ -70,6 +76,10 @@ childrenFromXmlFeatureList :: Maybe XmlChildren -> Maybe XmlGroupFeature -> Mayb
 childrenFromXmlFeatureList (Just ([]))  Nothing = Nothing 
 childrenFromXmlFeatureList _  (Just (XmlGroupFeature _ _ options)) = Just [xmlFeature2FeatureTree x | x <- options] 
 childrenFromXmlFeatureList (Just cs) Nothing = Just [xmlFeature2FeatureTree x | x <- cs] 
+
+xmlValue :: Maybe String -> String
+xmlValue (Just v) = v
+xmlValue (Nothing) = ""
 	 
 \end{code}	 
  	 

@@ -19,13 +19,15 @@ import UseCaseModel.PrettyPrinter.Latex
 import UseCaseModel.Parsers.XML.XmlUseCaseParser (parseUseCaseFile)
 import UseCaseModel.Types
 
-import ConfigurationKnowledge.Types
-import ConfigurationKnowledge.Interpreter
+import Ensemble.Types
+
+import SPL.Types
+import SPL.Interpreter
 
 import FeatureModel.Types 
 import FeatureModel.Parsers.GenericParser 
 
-import Transformations.Parsers.XML.XmlConfigurationParser
+import SPL.Transformations.Parsers.XML.XmlConfigurationParser
 
 import ExportProduct (exportUcmToLatex)
 
@@ -103,10 +105,10 @@ main = do
          if proceed == 'y' 
           then do
 	   let fc = createFC im
- 	   let spl = createSPL fm ucpl 
-           let product = build fm fc cm spl
+ 	   let spl = createSPL fm cm ucpl 
+           let product = build fc spl
            let out = (outputFile (snd t) (snd n))
-	   let ucp = ucm product
+	   let ucp = ucModel $ instanceAssetBase product
            exportUcmToLatex out ucp
 	   print $ "Ok, the output file was genarated at: " ++ out
           else print "Ok, closing your session. To start again, call the main function."
@@ -120,8 +122,13 @@ main = do
  
   
 
-createSPL :: FeatureModel -> UseCaseModel -> SPLModel
-createSPL fm ucm = SPLModel { splFM  = fm, splUCM = ucm }
+createSPL :: FeatureModel -> ConfigurationKnowledge -> UseCaseModel -> SPLModel
+createSPL fm cm ucmodel = 
+ SPLModel { 
+   splFM  = fm, 
+   splConfigurationKnowledge = cm, 
+   splAssetBase = SPLAssetBase { splAssets = Assets { ucm = ucmodel } }  
+}
 
 outputFile :: FilePath -> String -> FilePath
 outputFile  f n = f </> (n ++ ".tex") 

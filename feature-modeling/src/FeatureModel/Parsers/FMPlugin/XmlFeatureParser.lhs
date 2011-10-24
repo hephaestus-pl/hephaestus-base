@@ -27,12 +27,15 @@ xpFeature =
 	xpElem "feature" $
 	xpWrap (\ ((i,m1,m2),(n,c,g)) -> XmlFeature i m1 m2 n c g , 
                 \t -> ((featureId t, cmin t, cmax t), (name t, children t, group t))) $
-	xpPair (xpTriple (xpAttr "id" xpText)
-	       (xpAttr "min" xpickle)
-	       (xpAttr "max" xpickle))
-	       (xpTriple (xpAttr "name" xpText)
-	       (xpOption (xpList xpFeature)) 
-	       (xpOption (xpGroup)))		 
+	xpPair (xpTriple 
+                (xpAttr "id" xpText)
+	        (xpAttr "min" xpickle)
+	        (xpAttr "max" xpickle))
+	       (xpTriple 
+                (xpAttr "name" xpText)
+	        (xpOption (xpList xpFeature)) 
+	        (xpOption (xpGroup)))
+
 			 
 xpGroup :: PU XmlGroupFeature
 xpGroup = 	
@@ -45,9 +48,10 @@ xpGroup =
 xpFeatureConfiguration :: PU XmlFeatureConfiguration
 xpFeatureConfiguration = 
         xpElem "feature" $
-        xpWrap (uncurry3 XmlFeatureConfiguration, \ (XmlFeatureConfiguration cId cName cChildren) -> (cId, cName, cChildren)) $
-        xpTriple ( xpAttr "id" xpText)
-                 ( xpAttr "name" xpText)
-                 ( xpOption (xpList xpFeatureConfiguration))
+        xpWrap (uncurry4 XmlFeatureConfiguration, \ (XmlFeatureConfiguration cId cName cValue cChildren) -> (cId, cName, cValue, cChildren)) $
+        xp4Tuple ( xpAttr "id" xpText )
+                 ( xpAttr "name" xpText )
+                 ( xpOption (xpAttr "value" xpText) )
+                 ( xpOption (xpList xpFeatureConfiguration) )
         
 \end{code}
