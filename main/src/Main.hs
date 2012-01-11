@@ -84,15 +84,15 @@ main = do
  let f = fromJust (findPropertyValue "feature-model" ps)
  let i = fromJust (findPropertyValue "instance-model" ps) 
  let c = fromJust (findPropertyValue "configuration-model" ps)
- let u = fromJust (findPropertyValue "usecase-model" ps)
  let t = fromJust (findPropertyValue "target-dir" ps)
+ let u = fromJust (findPropertyValue "usecase-model" ps)  -- variability 
           
  fmp <- parseFeatureModel  ((ns fmSchema), snd f) FMPlugin
  imp <- parseInstanceModel (ns fcSchema) (snd i)  
  cmp <- parseConfigurationKnowledge (ns ckSchema) (snd c)
- ucp <- parseUseCaseFile (ns ucSchema) (snd u)   
+ ucp <- parseUseCaseFile (ns ucSchema) (snd u)           -- variability    
 	  
- let pResults = (fmp, imp, cmp, ucp)
+ let pResults = (fmp, imp, cmp, ucp) -- variability
  case pResults of 
     ((Core.Success fm), (Core.Success im), (Core.Success cm), (Core.Success ucpl)) -> 
         do 

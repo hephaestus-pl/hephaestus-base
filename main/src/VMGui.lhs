@@ -36,11 +36,11 @@ import BusinessProcess.Types
 import FeatureModel.Types
 import FeatureModel.Parsers.GenericParser 
 
-import Transformations.Parsers.XML.XmlConfigurationParser
+import SPL.Transformations.Parsers.XML.XmlConfigurationParser
 
-import ConfigurationKnowledge.Interpreter
-import ConfigurationKnowledge.Types
-import ConfigurationKnowledge.StaticChecker
+import SPL.Interpreter
+import SPL.Types
+import SPL.StaticChecker
 
 import ComponentModel.Parsers.ParserComponentModel
 

@@ -48,6 +48,7 @@ might be used for running it:
 \begin{code}
 module Main where
 
+import BasicTypes as Core
 import FeatureModel.Types
 import FeatureModel.FMTypeChecker
 import FeatureModel.FCTypeChecker
@@ -121,7 +122,7 @@ main = do
 processFlags :: [Flag] -> IO ()
 processFlags flags = do
  let args    = getOptions flags defaultOptions
- fmodel <- parseFeatureModel args
+ fmodel <- parseFeatureModel' args
  case (cmd args) of
   "summary" -> execSummary (fmodel)
   "check1"  -> execCheck1  (fmodel)
@@ -140,13 +141,13 @@ parseFeatureModelFormat args =
    "sxfm"      -> SXFM
    otherwise -> error $ concat ["\nunrecognized format ", (fmt args), (usageInfo header options)]
  
-parseFeatureModel args = do
+parseFeatureModel' args = do
  let fileName = fm args
  let format = parseFeatureModelFormat args
- fm <- genericParser fileName format
- return fm
-
-
+ fm <- parseFeatureModel ("", fileName) format
+ case fm of 
+  Core.Success fmodel -> return fmodel
+  Core.Fail e -> error e
 
 data Flag = Format String 
           | Command String 

@@ -17,7 +17,7 @@ where
 
 import qualified BasicTypes as Core
 
-import ConfigurationKnowledge.Types
+import SPL.Types
 
 import FeatureModel.Types
 import FeatureModel.FMTypeChecker
