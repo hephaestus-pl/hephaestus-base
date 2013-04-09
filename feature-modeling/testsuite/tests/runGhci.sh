@@ -1,0 +1,1 @@
+ ghci  -i../../../util/src:../../src/:. FeatureModelTests.hs 

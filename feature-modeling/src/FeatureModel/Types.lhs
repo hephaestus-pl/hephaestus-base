@@ -351,7 +351,7 @@ dimacsFormat exp =
 data FMSummary = FMSummary {
   nfeatures :: Int,
   nconstraints :: Int
-} deriving (Show)
+} deriving (Eq, Show)
 
 summary :: FeatureModel -> FMSummary 
 summary fm = 
