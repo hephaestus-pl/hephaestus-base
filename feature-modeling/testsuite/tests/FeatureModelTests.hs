@@ -5,6 +5,8 @@ import FeatureModel.FMTypeChecker
 
 import Test.HUnit
 
+import Criterion.Main
+
 
 simple, simple', simple'', simple'''   :: FeatureModel
 
