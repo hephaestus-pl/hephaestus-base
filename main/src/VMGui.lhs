@@ -5,14 +5,14 @@ module Main where
 
 import qualified BasicTypes as Core
 
-import Maybe
+import Data.Maybe
 
-import List
+import Data.List
 import Graphics.UI.Gtk
 import Graphics.UI.Gtk.Glade
 import Graphics.UI.Gtk.ModelView as New
-import IO
-import System
+import System.IO
+-- import System
 import qualified Data.Tree as Tree
 import Control.Concurrent
 
@@ -23,6 +23,9 @@ import System.Directory
 import System.FilePath
 
 import ExportProduct
+
+import Ensemble.Types 
+
 
 import RequirementModel.Types
 import RequirementModel.Parsers.XML.XmlRequirementParser
@@ -242,8 +245,10 @@ weaveFiles gui store =
      (Core.Success rm, Core.Success um, Core.Success cm, Core.Success fm, Core.Success im, Core.Success ck) -> 
          do    
            let fc  = FeatureConfiguration im
-           let spl = SPLModel fm rm um cm (BPM []) 
-           let product = build fm fc ck spl
+           let assets = Assets rm um (BPM [])
+           let splAssetBase = SPLAssetBase assets cm
+           let spl = SPLModel fm ck splAssetBase
+           let product = build fc spl
            exportResult gui product 
 
      otherwise -> do 

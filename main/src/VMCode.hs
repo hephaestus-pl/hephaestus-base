@@ -12,20 +12,22 @@ import System.Directory
 import System.FilePath
 
 
-import Maybe
+import Data.Maybe
+
 
 import qualified BasicTypes as Core
 
 import ComponentModel.Types
 import ComponentModel.Parsers.ParserComponentModel
 
-import ConfigurationKnowledge.Types
-import ConfigurationKnowledge.Interpreter
+import Ensemble.Types
+import SPL.Types
+import SPL.Interpreter
 
 import FeatureModel.Types 
 import FeatureModel.Parsers.GenericParser 
 
-import Transformations.Parsers.XML.XmlConfigurationParser
+import SPL.Transformations.Parsers.XML.XmlConfigurationParser
 
 import ExportProduct (exportSourceCode)
 
@@ -47,6 +49,7 @@ normalizedSchema cDir sch = cDir </> sch
 main = do 
  cDir <- getCurrentDirectory
  let ns = normalizedSchema cDir
+ args <- getArgs 
  
  putStrLn "============================================================================ "
  putStrLn "    )                                                                       "
@@ -71,9 +74,12 @@ main = do
  putStrLn "  source-dir={abs-path}/                                 "
  putStrLn "  target-dir={abs-path}/                                 " 
  putStrLn "============================================================================="
- putStrLn " ProjectFile: " 
+ f <- (if ((length args) == 0)
+        then do 
+                putStrLn " ProjectFile: " 
+                getLine	                 -- read the name of the project file 
+        else return $ head args)
  
- f <- getLine	             -- read the name of the project file 
  s <- readFile f             -- read the file contents
  let l = lines s             -- split the content in several lines
 
@@ -89,7 +95,7 @@ main = do
  let sourceDir = fromJust (findPropertyValue "source-dir" ps)
  let targetDir = fromJust (findPropertyValue "target-dir" ps)
           
- fmp <- parseFeatureModel  ((ns fmSchema), snd fmodel) FMPlugin
+ fmp <- parseFeatureModel  ((ns fmSchema), snd fmodel) (fmFormat $ snd fmodel)
  imp <- parseInstanceModel (ns fcSchema) (snd imodel)  
  ckp <- parseConfigurationKnowledge (ns ckSchema) (snd ckmodel)
  cmp <- parseComponentModel (snd cmodel)   
@@ -107,12 +113,12 @@ main = do
          if proceed == 'y' 
           then do
 	   let fc = createFC im
- 	   let spl = createSPL fm cm
-           let product = build fm fc ck spl
+ 	   let spl = createSPL fm ck cm
+           let product = build fc spl
            let src = snd sourceDir
            let out = snd targetDir
 	   exportSourceCode src out product
-	   putStrLn $ "Ok, the output file was genarated at: blah " 
+	   putStrLn $ ("Ok, the output file was genarated at: " ++ out) 
           else putStrLn "Ok, closing your session. To start again, call the main function."
 
     ((Core.Fail e), _, _, _) -> putStrLn $ "Error parsing the feature model " ++ e 
@@ -124,8 +130,13 @@ main = do
  
   
 
-createSPL :: FeatureModel -> ComponentModel -> SPLModel
-createSPL fm  cm = SPLModel { splFM  = fm, splMappings = cm }
+-- createSPL :: FeatureModel -> ComponentModel -> SPLModel
+createSPL fm  ck cm = 
+  SPLModel { 
+    splFM  = fm, 
+    splConfigurationKnowledge = ck,
+    splAssetBase = SPLAssetBase { mappings = cm } 
+  }
 
 -- given a String s, it returns just a property, 
 -- if s matches "key=value". Otherwise, it returns 
@@ -144,3 +155,8 @@ findPropertyValue k (x:xs) =
  else findPropertyValue k xs 
 
 createFC im = FeatureConfiguration im
+
+fmFormat :: String -> FmFormat
+fmFormat fileName 
+ | Core.endsWith "sxfm" fileName = SXFM
+ | otherwise = FMPlugin

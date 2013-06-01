@@ -22,10 +22,10 @@ import Funsat.Types
 import Funsat.Solver
 import Funsat.Resolution
 
-import List
+import Data.List
 import qualified Data.Set as Set
 
-import Maybe
+import Data.Maybe
 \end{code}
 %endif
 

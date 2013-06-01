@@ -17,7 +17,7 @@ module UseCaseModel.Parsers.XML.XmlUseCaseModel
 
 where
 
-import List 
+import Data.List 
 
 import UseCaseModel.Types
 import BasicTypes

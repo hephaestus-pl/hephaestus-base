@@ -25,33 +25,35 @@ uncurry6 fn (a, b, c, d, e, f) = fn a b c d e f
 xpFeature :: PU XmlFeature
 xpFeature =
 	xpElem "feature" $
-	xpWrap (\ ((i,m1,m2),(n,c,g)) -> XmlFeature i m1 m2 n c g , 
-                \t -> ((featureId t, cmin t, cmax t), (name t, children t, group t))) $
-	xpPair (xpTriple 
-                (xpAttr "id" xpText)
-	        (xpAttr "min" xpickle)
-	        (xpAttr "max" xpickle))
-	       (xpTriple 
-                (xpAttr "name" xpText)
-	        (xpOption (xpList xpFeature)) 
-	        (xpOption (xpGroup)))
+	xpWrap (\ (i,m1,m2,n, t, c,g) -> XmlFeature i m1 m2 n c g , 
+                \t -> (featureId t, cmin t, cmax t, name t, "NONE", children t, group t)) $
+	xp7Tuple (xpAttr "id" xpText)
+	         (xpAttr "min" xpickle)
+	         (xpAttr "max" xpickle)
+                 (xpAttr "name" xpText)
+                 (xpAttr "type" xpText) 
+	         (xpOption (xpList xpFeature)) 
+	         (xpOption (xpGroup))
 
 			 
 xpGroup :: PU XmlGroupFeature
 xpGroup = 	
 	xpElem "featureGroup" $
-	xpWrap ( uncurry3 XmlGroupFeature, \ (XmlGroupFeature cmin cmax options) -> (cmin, cmax, options) ) $
-	xpTriple ( xpAttr "min" xpickle ) 
+	xpWrap ( \(m1, m2, i, c) -> XmlGroupFeature m1 m2 c, \ (XmlGroupFeature cmin cmax options) -> (cmin, cmax, "id", options) ) $
+	xp4Tuple ( xpAttr "min" xpickle ) 
 	         ( xpAttr "max" xpickle ) 
-	         ( xpList xpFeature )
+                 ( xpAttr "id" xpText ) 	      
+                 ( xpList xpFeature )
 
 xpFeatureConfiguration :: PU XmlFeatureConfiguration
 xpFeatureConfiguration = 
         xpElem "feature" $
-        xpWrap (uncurry4 XmlFeatureConfiguration, \ (XmlFeatureConfiguration cId cName cValue cChildren) -> (cId, cName, cValue, cChildren)) $
-        xp4Tuple ( xpAttr "id" xpText )
+        xpWrap (\(i, n, t, v, c) -> XmlFeatureConfiguration i n v c, 
+                \ (XmlFeatureConfiguration cId cName cValue cChildren) -> (cId, cName, "NONE", cValue, cChildren)) $
+        xp5Tuple ( xpAttr "id" xpText )
                  ( xpAttr "name" xpText )
-                 ( xpOption (xpAttr "value" xpText) )
+                 ( xpAttr "type" xpText )
+		 ( xpOption (xpAttr "value" xpText) )
                  ( xpOption (xpList xpFeatureConfiguration) )
         
 \end{code}

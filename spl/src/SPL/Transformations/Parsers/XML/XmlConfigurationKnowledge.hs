@@ -19,7 +19,7 @@ import Text.ParserCombinators.Parsec
 import qualified Text.ParserCombinators.Parsec.Token as P
 import Text.ParserCombinators.Parsec.Language( haskellStyle )
 
-import List
+import Data.List
          
 data XmlConfigurationKnowledge = XmlConfigurationKnowledge {
       xmlConfigurations :: [XmlConfiguration]

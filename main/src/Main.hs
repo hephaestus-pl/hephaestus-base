@@ -11,7 +11,7 @@ import System.Directory
 import System.FilePath
 
 
-import Maybe
+import Data.Maybe
 
 import qualified BasicTypes as Core
 

@@ -23,8 +23,8 @@ import SPL.Types
 import Ensemble.Types 
 
 import Data.Generics
-import Maybe
-import List
+import Data.Maybe
+import Data.List
 
 -- | Transformation that selects SPL use cases
 --   from a list of IDs. This transformation deals 

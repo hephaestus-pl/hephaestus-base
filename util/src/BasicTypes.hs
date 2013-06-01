@@ -9,7 +9,7 @@ import Control.Monad (MonadPlus(..), liftM)
 
 import Network.URI
 
-import List
+import Data.List
 
 type Id = String
 type Name = String
@@ -176,3 +176,7 @@ parenthesize ss = "(" ++ parenthesize' ss ++ ")"
   parenthesize'  [] = ""
   parenthesize' [l] = l 
   parenthesize' (l:ls) = l ++ ", " ++ parenthesize' ls
+
+endsWith :: (Eq a) => [a] -> [a] -> Bool
+endsWith key list = key == (drop n list) 
+ where n = (length list) - (length key)

@@ -38,15 +38,16 @@ The reserved words used in CK are the following: \\
 
 \begin{tabular}{lll}
 {\reserved{And}} &{\reserved{Not}} &{\reserved{Or}} \\
-{\reserved{bindParameter}} &{\reserved{evaluateAdvice}} &{\reserved{selectScenario}} \\
+{\reserved{bindParameter}} &{\reserved{evaluateAdvice}} &{\reserved{selectAndMoveComponent}} \\
+{\reserved{selectBuildEntries}} &{\reserved{selectComponents}} &{\reserved{selectScenario}} \\
 \end{tabular}\\
 
 The symbols used in CK are the following: \\
 
 \begin{tabular}{lll}
 {\symb{configuration knowledge}} &{\symb{\{}} &{\symb{\}}} \\
-{\symb{{$=$}{$>$}}} &{\symb{(}} &{\symb{)}} \\
-{\symb{,}} &{\symb{;}} & \\
+{\symb{(}} &{\symb{,}} &{\symb{)}} \\
+{\symb{;}} & & \\
 \end{tabular}\\
 
 \subsection*{Comments}
@@ -63,21 +64,21 @@ All other symbols are terminals.\\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{ConfigurationItem}} & {\arrow}  &{\nonterminal{FeatureExp}} {\terminal{{$=$}{$>$}}} {\nonterminal{ListTransformation}}  \\
+{\nonterminal{ConfigurationItem}} & {\arrow}  &{\terminal{(}} {\nonterminal{FeatureExp}} {\terminal{,}} {\nonterminal{ListTransformation}} {\terminal{)}}  \\
+ & {\delimit}  &{\terminal{(}} {\nonterminal{FeatureExp}} {\terminal{,}} {\nonterminal{ListTransformation}} {\terminal{,}} {\nonterminal{FeatureExp}} {\terminal{,}} {\nonterminal{FeatureExp}} {\terminal{)}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{Transformation}} & {\arrow}  &{\terminal{selectScenario}} {\terminal{(}} {\nonterminal{ListScenarioId}} {\terminal{)}}  \\
- & {\delimit}  &{\terminal{evaluateAdvice}} {\terminal{(}} {\nonterminal{ListAdviceId}} {\terminal{)}}  \\
+{\nonterminal{Transformation}} & {\arrow}  &{\terminal{selectScenario}} {\terminal{(}} {\nonterminal{ListId}} {\terminal{)}}  \\
+ & {\delimit}  &{\terminal{evaluateAdvice}} {\terminal{(}} {\nonterminal{ListId}} {\terminal{)}}  \\
  & {\delimit}  &{\terminal{bindParameter}} {\terminal{(}} {\nonterminal{Ident}} {\terminal{,}} {\nonterminal{Ident}} {\terminal{)}}  \\
+ & {\delimit}  &{\terminal{selectComponents}} {\terminal{(}} {\nonterminal{ListId}} {\terminal{)}}  \\
+ & {\delimit}  &{\terminal{selectAndMoveComponent}} {\terminal{(}} {\nonterminal{Id}} {\terminal{,}} {\nonterminal{Id}} {\terminal{)}}  \\
+ & {\delimit}  &{\terminal{selectBuildEntries}} {\terminal{(}} {\nonterminal{ListId}} {\terminal{)}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{ScenarioId}} & {\arrow}  &{\nonterminal{Ident}}  \\
-\end{tabular}\\
-
-\begin{tabular}{lll}
-{\nonterminal{AdviceId}} & {\arrow}  &{\nonterminal{Ident}}  \\
+{\nonterminal{Id}} & {\arrow}  &{\nonterminal{Ident}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
@@ -100,15 +101,9 @@ All other symbols are terminals.\\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{ListScenarioId}} & {\arrow}  &{\emptyP} \\
- & {\delimit}  &{\nonterminal{ScenarioId}}  \\
- & {\delimit}  &{\nonterminal{ScenarioId}} {\terminal{,}} {\nonterminal{ListScenarioId}}  \\
-\end{tabular}\\
-
-\begin{tabular}{lll}
-{\nonterminal{ListAdviceId}} & {\arrow}  &{\emptyP} \\
- & {\delimit}  &{\nonterminal{AdviceId}}  \\
- & {\delimit}  &{\nonterminal{AdviceId}} {\terminal{,}} {\nonterminal{ListAdviceId}}  \\
+{\nonterminal{ListId}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{Id}}  \\
+ & {\delimit}  &{\nonterminal{Id}} {\terminal{,}} {\nonterminal{ListId}}  \\
 \end{tabular}\\
 
 

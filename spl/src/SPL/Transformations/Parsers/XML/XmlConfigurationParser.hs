@@ -77,6 +77,9 @@ instance XmlPickler XmlConfiguration where
 instance XmlPickler XmlTransformation where
  	xpickle = xpTransformation	
 
+nameSpace :: String
+nameSpace = "ck.v20090401"
+
 xpConfigurationKnowledge :: PU XmlConfigurationKnowledge
 xpConfigurationKnowledge =
 	xpElem "configurationModel" $
@@ -91,6 +94,21 @@ xpConfiguration =
 	         ( xpList xpTransformation ) 
                  ( xpOption ( xpElem "required" xpText ) ) 
                  ( xpOption ( xpElem "provided" xpText ) ) 
+
+-- xpConfigurationKnowledge :: PU XmlConfigurationKnowledge
+-- xpConfigurationKnowledge =
+--	xpElem "configurationModel" $
+--	xpWrap (XmlConfigurationKnowledge, \ (XmlConfigurationKnowledge cs) -> (cs) ) $
+--             (xpList xpConfiguration)		 
+			 
+-- xpConfiguration :: PU XmlConfiguration
+-- xpConfiguration = 	
+--	xpElem "configuration" $
+--	xpWrap ( XmlConfiguration, \ (XmlConfiguration e ts r p) -> (e, ts, r, p) ) $
+--	xp4Tuple ( xpElem "expression" xpText ) 
+--	         ( xpList xpTransformation ) 
+--                 ( xpOption ( xpElem "required" xpText ) ) 
+--                 ( xpOption ( xpElem "provided" xpText ) ) 
          
 	
 xpTransformation :: PU XmlTransformation

@@ -1,6 +1,6 @@
-<configurationModel xmlns="ck.v20090401">
+<configurationModel>
 
-	<configuration xmlns="">
+	<configuration>
 		<expression>withdraw</expression>
 		<transformation>
 			<name>selectScenarios</name>
@@ -8,7 +8,7 @@
 		</transformation>
 	</configuration>
 	
-	<configuration xmlns="">
+	<configuration>
 		<expression>buyStocks</expression>
 		<transformation>
 			<name>selectScenarios</name>
@@ -16,7 +16,7 @@
 		</transformation>
 	</configuration>
 
-	<configuration xmlns="">
+	<configuration>
 		<expression>transfer</expression>
 		<transformation>
 			<name>selectScenarios</name>
@@ -24,7 +24,7 @@
 		</transformation>
 	</configuration>
 
-	<configuration xmlns="">
+	<configuration>
 		<expression>PIN</expression>
 		<transformation>
 			<name>evaluateAspects</name>
@@ -32,7 +32,7 @@
 		</transformation>
 	</configuration>
 	
-	<configuration xmlns="">
+	<configuration>
 		<expression>And(biometrics, fingerprint)</expression>
 		<transformation>
 			<name>evaluateAspects</name>
@@ -40,7 +40,7 @@
 		</transformation>
 	</configuration>
 
-	<configuration xmlns="">
+	<configuration>
 		<expression>detailedTransaction</expression>
 		<transformation>
 			<name>evaluateAspects</name>
@@ -48,7 +48,7 @@
 		</transformation>
 	</configuration>
 
-	<configuration xmlns="">
+	<configuration>
 		<expression>fraudDetection</expression>
 		<transformation>
 			<name>evaluateAspects</name>
@@ -56,7 +56,7 @@
 		</transformation>
 	</configuration>
 
-	<configuration xmlns="">
+	<configuration>
 		<expression>operationlimit</expression>
 		<transformation>
 			<name>bindParameter</name>

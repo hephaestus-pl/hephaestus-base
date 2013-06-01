@@ -19,9 +19,9 @@
 module UseCaseModel.Types where
 
 -- import Prelude hiding ( (^) )
-import List 
+import Data.List 
 
-import Maybe
+import Data.Maybe
 
 import Data.Generics
 

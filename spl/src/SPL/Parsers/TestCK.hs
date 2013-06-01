@@ -2,19 +2,19 @@
 module Main where
 
 
-import IO ( stdin, hGetContents )
-import System ( getArgs, getProgName )
+import System.IO ( stdin, hGetContents )
+import System.Environment ( getArgs, getProgName )
 
-import ConfigurationKnowledge.Parsers.LexCK
-import ConfigurationKnowledge.Parsers.ParCK
-import ConfigurationKnowledge.Parsers.SkelCK
-import ConfigurationKnowledge.Parsers.PrintCK
-import ConfigurationKnowledge.Parsers.AbsCK
-
-
+import SPL.Parsers.LexCK
+import SPL.Parsers.ParCK
+import SPL.Parsers.SkelCK
+import SPL.Parsers.PrintCK
+import SPL.Parsers.AbsCK
 
 
-import ConfigurationKnowledge.Parsers.ErrM
+
+
+import SPL.Parsers.ErrM
 
 type ParseFun a = [Token] -> Err a
 

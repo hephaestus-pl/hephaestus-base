@@ -29,8 +29,8 @@ import Funsat.Types
 import qualified Data.Set as Set
 
 import Data.Generics
-import List
-import Maybe
+import Data.List
+import Data.Maybe
 
 
 \end{code}
@@ -351,7 +351,7 @@ dimacsFormat exp =
 data FMSummary = FMSummary {
   nfeatures :: Int,
   nconstraints :: Int
-} deriving (Eq, Show)
+} deriving (Show)
 
 summary :: FeatureModel -> FMSummary 
 summary fm = 

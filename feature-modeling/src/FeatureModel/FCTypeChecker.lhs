@@ -5,7 +5,7 @@
 module FeatureModel.FCTypeChecker where 
 
 import FeatureModel.Types
-import FeatureModel.FMTypeChecker
+import FeatureModel.FMTypeChecker hiding (checkConstraints)
 
 \end{code}
 %endif 
@@ -18,8 +18,8 @@ each constraint of the feature model must be considered by
 the configuration. 
  
 \begin{code}
---validInstance :: FeatureModel -> FeatureConfiguration -> [ErrorMessage]
---validInstance fm fc = 
+-- validInstance :: FeatureModel -> FeatureConfiguration -> [ErrorMessage]
+-- validInstance fm fc = 
 --  let f1 = fmTree fm
 --      f2 = fcTree fc
 --  in 
@@ -33,9 +33,9 @@ validInstance' fm fc =
 
 -- checkType :: FeatureModel -> [ErrorMessage]
 -- checkType fm = 
--- case fmTypeChecker fm of 
---  Success   -> [] 
---  Fail xs   -> [("Type checker of the feature model failed. " ++ show (xs))]
+--  case fmTypeChecker fm of 
+--   Success   -> [] 
+--   Fail xs   -> [("Type checker of the feature model failed. " ++ show (xs))]
 \end{code}
 
 -- The type checker for a selected feature \texttt{fc}
@@ -44,7 +44,7 @@ validInstance' fm fc =
 -- on the group type of the feature \texttt{fm}.
 
 -- \begin{code}
--- checkFeatures :: FeatureTree -> FeatureTree -> ErrorList
+-- checkFeatures :: FeatureTree -> FeatureTree -> [String]
 -- checkFeatures FeatureError fc = [("Feature " ++ (fId fc) ++ " not expected")]
 -- checkFeatures fm  FeatureError = [("Expecting feature " ++ (fId fm))]
 -- checkFeatures fm fc = 
@@ -75,14 +75,14 @@ validInstance' fm fc =
 --                , fType x == Mandatory] 
    
 -- -- check the constraints of Optional features
--- checkOptionalFeatures :: Feature -> Feature -> ErrorList
+-- checkOptionalFeatures :: Feature -> Feature -> [String]
 -- checkOptionalFeatures fm fc = (fms ++ fcs)
 --  where
 --   fms = foldr (++) [] [checkFeatures x y | x <- children fm, y <- children fc, x == y, fType x == Optional]
 --   fcs = foldr (++) [] [checkFeatures FeatureError y | y <- children fc, (findChildFeature y fm) == FeatureError]
 
--- -- check the constraints of an Alternative feature
--- checkAlternativeFeature :: Feature -> Feature -> ErrorList
+-- check the constraints of an Alternative feature
+-- checkAlternativeFeature :: Feature -> Feature -> [String]
 -- checkAlternativeFeature fm fc = 
 --  case children fc of 
 --   []     -> [("Exactly one child must be selected for feature " ++ (fId fm))]
@@ -90,23 +90,24 @@ validInstance' fm fc =
 --   (x:xs) -> [("Exactly one child must be selected for feture " ++ (fId fm))] 
 
 -- -- check the constraints of an Or feature
--- checkOrFeature :: Feature -> Feature -> ErrorList
+-- checkOrFeature :: Feature -> Feature -> [String]
 -- checkOrFeature fm fc = 
---  case children fc of 
---   [] -> [("At least one child must be selected for feature " ++ (fId fm))]
---   xs -> foldr (++) [] [checkFeatures (findChildFeature x fm) x | x <- xs] 
+--  case fc of 
+--   Root n [] -> [("At least one child must be selected for feature " ++ (fId fm))]
+--   Root n xs -> foldr (++) [] [checkFeatures (findChildFeature x fm) x | x <- xs] 
 
--- -- check if the fc complies to the fm global constraints
--- checkConstraints :: FeatureModel -> FeatureConfiguration -> ErrorList
--- checkConstraints fm fc = [("Constraint " ++ (show c) ++ " not satisfied") 
---                          | c <- fmConstraints fm
---                          , not (evalConstraint fc c)
---                          ]
+-- check if the fc complies to the fm global constraints
+-- checkConstraints :: FeatureModel -> FeatureConfiguration -> [String]
+-- checkConstraints fm fc = []
+--checkConstraints fm fc = [("Constraint " ++ (show c) ++ " not satisfied") 
+--                         | c <- fmConstraints fm
+--                        , not (evalConstraint fc c)
+--                         ]
 
--- -- just an auxiliarly function for checking if errors where found
--- existError :: ErrorList -> Bool
+-- just an auxiliarly function for checking if errors where found
+-- existError :: [String] -> Bool
 -- existError [] = False
 -- existError (x:xs) = True
 
-\end{code}
-%endif
+-- \end{code}
+-- %endif

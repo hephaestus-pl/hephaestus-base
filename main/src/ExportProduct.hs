@@ -1,11 +1,13 @@
 module ExportProduct (exportProduct, exportUcmToLatex, exportAspectInterfacesToLatex, exportSourceCode) where
 
-import IO
-import System
+import System.IO
+-- import System
 import System.Directory
 import System.FilePath
 import System.Process
+import System.Exit
 import Control.Monad
+import Control.Exception
 
 import Ensemble.Types
 import ComponentModel.Types
