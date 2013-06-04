@@ -1,13 +1,17 @@
-module FeatureModelTests where 
+module Main where  -- identificar module com Main para o Criterion funcionar
 
 import BasicTypes hiding (Success,Fail)
 import Test.HUnit
-import FeatureModel.Main hiding (main)
 import FeatureModel.Types
 import FeatureModel.FMTypeChecker
 import FeatureModel.FCTypeChecker 
 import FeatureModel.Analysis
 import FeatureModel.OBDD
+import qualified Criterion.Main as Criterion
+
+--inclusão para entrar com argumentos no módulo de teste
+import FeatureModel.Main hiding (main)
+import System.Environment
 
 
 
@@ -121,4 +125,12 @@ teste4=TestCase (assertBool "Homogeneidade modelo10 " ((0.666 - 0.1 < h) && (h <
 
 allTests=TestList [TestLabel "teste1" teste1, TestLabel "teste2" teste2, TestLabel "teste3" teste3, TestLabel "test4" teste4]
 
+
+main::IO()
+main = do
+	fModel1<- parseFeatureModel' $ Options {fmt ="fmp", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/MobileMedia/fm-mobileMedia.xml",fc="/home/luiz/hephaestus/feature-modeling/samples/MobileMedia/schema_feature-model.rng"}
+	fModel2<- parseFeatureModel' $ Options {fmt ="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench10.m",fc=""}
+	fModel3<- parseFeatureModel' $ Options {fmt ="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench100.m",fc=""}	
+	fModel4<- parseFeatureModel' $ Options {fmt ="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench200.m",fc=""}	
+	Criterion.defaultMain [Criterion.bench "Teste SAT Funsat Modelo 1 - MobileMedia" $  Criterion.whnf fmTypeChecker fModel1, Criterion.bench "Teste SAT OBDD Modelo 1 -MobileMedia"  $ Criterion.whnf satOBDD fModel1,Criterion.bench "Teste SAT Funsat Modelo 2 - bench10.m" $  Criterion.whnf fmTypeChecker fModel2, Criterion.bench "Teste SAT OBDD Modelo 2 -bench10.m"  $ Criterion.whnf satOBDD fModel2, Criterion.bench "Teste SAT Funsat Modelo 3 - bench100.m" $  Criterion.whnf fmTypeChecker fModel3, Criterion.bench "Teste SAT OBDD Modelo 3 -bench100.m"  $ Criterion.whnf satOBDD fModel3]--, Criterion.bench "Teste bench100.m" $ Criterion.nf numberOfModels fModel100, Criterion.bench "Teste bench200.m" $ Criterion.nf numberOfModels fModel200]
 
