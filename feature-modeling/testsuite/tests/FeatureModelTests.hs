@@ -2,12 +2,13 @@ module FeatureModelTests where
 
 import BasicTypes hiding (Success,Fail)
 import Test.HUnit
--- import FeatureModel.Main
+import FeatureModel.Main hiding (main)
 import FeatureModel.Types
 import FeatureModel.FMTypeChecker
 import FeatureModel.FCTypeChecker 
 import FeatureModel.Analysis
 import FeatureModel.OBDD
+
 
 
 a=Feature "a" "a" Mandatory "" BasicFeature []
@@ -111,20 +112,6 @@ modelo10=FeatureModel{
 }
 
 
-
-{-
-	funcoes de teste: summary, fmToPropositionalLogic, fmTypeChecker,fmTree (apresenta so arvore sem restricoes), findBadSmells, execNumberOfModels,validInstance (parece que erra ao considerar configuracao com feature qualquer alem do modelo
-
-
-teste1=TestCase (assertEqual " Numero de features e de restricoes do modelo1" (FMSummary 1 1) (summary modelo1))
-teste1_1=TestCase (assertEqual "Verifica satisfatibilidade do modelo de features" (Success) (fmTypeChecker modelo1))
-
-allTests=TestList [TestLabel "teste1" teste1, TestLabel "teste1_1" teste1_1]
-
-
-
--}
-
 teste1=TestCase (assertEqual "Numero de modelos/produtos esperado" 1 (numberOfModels modelo1))
 teste2=TestCase (assertEqual "Numero de modelos esperado " 1 (numberOfModels modelo2))
 teste3=TestCase (assertEqual "Numero de modelos esperado " 2 (numberOfModels modelo3))
@@ -134,9 +121,4 @@ teste4=TestCase (assertBool "Homogeneidade modelo10 " ((0.666 - 0.1 < h) && (h <
 
 allTests=TestList [TestLabel "teste1" teste1, TestLabel "teste2" teste2, TestLabel "teste3" teste3, TestLabel "test4" teste4]
 
-{-
-main::IO()
-main = do
-	num <- (numberOfModels modelo3)
-	print "Numero de Modelos para modelo 3" 
-  print num-}
+
