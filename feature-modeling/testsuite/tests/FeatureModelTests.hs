@@ -8,6 +8,7 @@ import FeatureModel.FCTypeChecker
 import FeatureModel.Analysis
 import FeatureModel.OBDD
 import qualified Criterion.Main as Criterion
+import Test.BenchPress
 
 --inclusão para entrar com argumentos no módulo de teste
 import FeatureModel.Main hiding (main)
@@ -128,9 +129,16 @@ allTests=TestList [TestLabel "teste1" teste1, TestLabel "teste2" teste2, TestLab
 
 main::IO()
 main = do
-	fModel1<- parseFeatureModel' $ Options {fmt ="fmp", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/MobileMedia/fm-mobileMedia.xml",fc="/home/luiz/hephaestus/feature-modeling/samples/MobileMedia/schema_feature-model.rng"}
-	fModel2<- parseFeatureModel' $ Options {fmt ="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench10.m",fc=""}
-	fModel3<- parseFeatureModel' $ Options {fmt ="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench100.m",fc=""}	
-	fModel4<- parseFeatureModel' $ Options {fmt ="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench200.m",fc=""}	
-	Criterion.defaultMain [Criterion.bench "Teste SAT Funsat Modelo 1 - MobileMedia" $  Criterion.whnf fmTypeChecker fModel1, Criterion.bench "Teste SAT OBDD Modelo 1 -MobileMedia"  $ Criterion.whnf satOBDD fModel1,Criterion.bench "Teste SAT Funsat Modelo 2 - bench10.m" $  Criterion.whnf fmTypeChecker fModel2, Criterion.bench "Teste SAT OBDD Modelo 2 -bench10.m"  $ Criterion.whnf satOBDD fModel2, Criterion.bench "Teste SAT OBDD Modelo 3 -bench100.m - funsat travou"  $ Criterion.whnf satOBDD fModel3]--Criterion.bench "Teste SAT Funsat Modelo 3 - bench100.m" $  Criterion.whnf fmTypeChecker fModel3, Criterion.bench "Teste SAT OBDD Modelo 3 -bench100.m"  $ Criterion.whnf satOBDD fModel3]--, Criterion.bench "Teste bench100.m" $ Criterion.nf numberOfModels fModel100, Criterion.bench "Teste bench200.m" $ Criterion.nf numberOfModels fModel200]
-
+	fModel1 <-parseFeatureModel' $ Options {fmt ="fmp", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/MobileMedia/fm-mobileMedia.xml",fc="/home/luiz/hephaestus/feature-modeling/samples/MobileMedia/schema_feature-model.rng"}
+	fModel2 <-parseFeatureModel' $ Options {fmt="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench10.m", fc =""}
+	--fModel3 <-parseFeatureModel' $ Options {fmt="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench100.m",fc=""}	
+	--fModel4 <-parseFeatureModel' $ Options {fmt="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/FeatureIDE/M10/10-299.m", fc =""} --ocorre erro no parse assim *** Exception: syntax error at line 5 before ; Err (Pn 79 7 1)
+	fModel5 <-parseFeatureModel' $ Options {fmt="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/berkley/model.m", fc =""}
+	fModel6 <-parseFeatureModel' $ Options {fmt="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench200.m", fc =""}	
+	fModel7 <-parseFeatureModel' $ Options {fmt="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench500.m", fc =""}		
+	execSummary fModel6
+	bench 100 $ print $ homogeneity fModel6
+	--bench 100 $ print $ execNumberOfModels fModel6
+	--bench 100 $ execCheck1 fModel7 -- testando primeiro modelo com fmTypeChecker (funsat)
+	--bench 10 $ execCheck3 fModel7 -- testando primeiro modelo com SAT OBDD, com única repetição -}
+	-- Da maneira acima o bench é realizado uma única vez, tentarei via ghci
