@@ -137,7 +137,7 @@ main = do
 	fModel6 <-parseFeatureModel' $ Options {fmt="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench200.m", fc =""}	
 	fModel7 <-parseFeatureModel' $ Options {fmt="fmide", cmd="bench", fm="/home/luiz/hephaestus/feature-modeling/samples/bench500.m", fc =""}		
 	execSummary fModel6
-	bench 100 $ print $ homogeneity fModel6
+	bench 100 $ print $ homogeneity fModel5
 	--bench 100 $ print $ execNumberOfModels fModel6
 	--bench 100 $ execCheck1 fModel7 -- testando primeiro modelo com fmTypeChecker (funsat)
 	--bench 10 $ execCheck3 fModel7 -- testando primeiro modelo com SAT OBDD, com única repetição -}
