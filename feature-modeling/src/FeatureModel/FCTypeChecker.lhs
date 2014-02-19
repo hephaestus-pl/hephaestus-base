@@ -26,8 +26,8 @@ the configuration.
 --   if (fnode f1 == fnode f2) then (checkType fm) ++ (checkFeatures f1 f2) ++ (checkConstraints fm fc)
 --   else ["The root elements must be the same"]
 
-validInstance' :: FeatureModel -> FeatureConfiguration -> Bool
-validInstance' fm fc = 
+validInstance :: FeatureModel -> FeatureConfiguration -> Bool
+validInstance fm fc = 
  let fmExpression = foldAnd (fmToPropositionalLogic fm)
  in eval fc fmExpression 
 
