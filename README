@@ -44,8 +44,6 @@ could easly install these dependencies using caball install. Only the following
      $ cabal install hxt
      $ cabal install hxt-relaxng
 
-Testando commit
-
 It is also necessary to install gtk2hs into your system. See the 
 following link for further details:
 
