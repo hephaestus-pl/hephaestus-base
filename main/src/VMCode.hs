@@ -49,64 +49,49 @@ normalizedSchema cDir sch = cDir </> sch
 main = do 
  cDir <- getCurrentDirectory
  let ns = normalizedSchema cDir
- args <- getArgs 
  
- putStrLn "============================================================================ "
- putStrLn "    )                                                                       "
- putStrLn " ( /(                 )                 )              (          (          "  
- putStrLn " )\\())   (         ( /(     )    (   ( /(   (          )\\         )\\ )   (   " 
- putStrLn "((_)\\   ))\\ `  )   )\\()) ( /(   ))\\  )\\()) ))\\  (    (((_)   (   (()/(  ))\\  " 
- putStrLn " _((_) /((_)/(/(  ((_)\\  )(_)) /((_)(_))/ /((_) )\\   )\\___   )\\   ((_))/((_) "
- putStrLn "| || |(_)) ((_)_\\ | |(_)((_)_ (_))  | |_ (_))( ((_) ((/ __| ((_)  _| |(_))   " 
- putStrLn "| __ |/ -_)| '_ \\)| ' \\ / _` |/ -_) |  _|| || |(_-<  | (__ / _ \\/ _` |/ -_)  " 
- putStrLn "|_||_|\\___|| .__/ |_||_|\\__,_|\\___|  \\__| \\_,_|/__/   \\___|\\___/\\__,_|\\___|  " 
- putStrLn "           |_|                                                               "
- putStrLn "============================================================================="
- putStrLn "                                                         " 
- putStrLn " Please, inform the name of the project file.            "
- putStrLn " It must specify, as pairs key=value, the path to the    "
- putStrLn " input files, such as:                                   "
- putStrLn "  name=projectName                                       "
- putStrLn "  feature-model={abs-path}/featureModel.xml              " 
- putStrLn "  configuration-model={abs-path}/configurationModel.xml  "
- putStrLn "  instance-model={abs-path}/instanceModel.xml            "
- putStrLn "  component-model={abs-path}/componentModel.txt          "
- putStrLn "  source-dir={abs-path}/                                 "
- putStrLn "  target-dir={abs-path}/                                 " 
- putStrLn "============================================================================="
- f <- (if ((length args) == 0)
-        then do 
-                putStrLn " ProjectFile: " 
-                getLine	                 -- read the name of the project file 
-        else return $ head args)
+ welcomeMessage 
  
- s <- readFile f             -- read the file contents
- let l = lines s             -- split the content in several lines
+ cmd <- getLine               -- read the top level command
+ 
+ if (cmd == "start") then do
+  showHelp
+  putStrLn " ProjectFile: " 
+  f <- getLine                -- read the name of the project file   	
+  s <- readFile f             -- read the file contents
+  let l = lines s             -- split the content in several lines
 
- -- read all properties 
- let ps  = map fromJust (filter (isJust) (map readPropertyValue l))
+  -- read all properties 
+  let ps  = map fromJust (filter (isJust) (map readPropertyValue l))
  
- -- retrieve the specific property values we are interested in
- let name = fromJust (findPropertyValue "name" ps)
- let fmodel = fromJust (findPropertyValue "feature-model" ps)
- let imodel = fromJust (findPropertyValue "instance-model" ps) 
- let ckmodel = fromJust (findPropertyValue "configuration-model" ps)
- let cmodel = fromJust (findPropertyValue "component-model" ps)
- let sourceDir = fromJust (findPropertyValue "source-dir" ps)
- let targetDir = fromJust (findPropertyValue "target-dir" ps)
-          
- fmp <- parseFeatureModel  ((ns fmSchema), snd fmodel) (fmFormat $ snd fmodel)
- imp <- parseInstanceModel (ns fcSchema) (snd imodel)  
- ckp <- parseConfigurationKnowledge (ns ckSchema) (snd ckmodel)
- cmp <- parseComponentModel (snd cmodel)   
-	  
- let pResults = (fmp, imp, ckp, cmp)
- case pResults of 
+  -- retrieve the specific property values we are interested in
+  let name = fromJust (findPropertyValue "name" ps)
+  let fmodel = fromJust (findPropertyValue "feature-model" ps)
+  let imodel = fromJust (findPropertyValue "instance-model" ps) 
+  let ckmodel = fromJust (findPropertyValue "configuration-model" ps)
+  let cmodel = fromJust (findPropertyValue "component-model" ps)
+  let sourceDir = fromJust (findPropertyValue "source-dir" ps)
+  let targetDir = fromJust (findPropertyValue "target-dir" ps)
+  
+  -- parser the input models        
+  fmp <- parseFeatureModel  ((ns fmSchema), snd fmodel) (fmFormat $ snd fmodel)
+  imp <- parseInstanceModel (ns fcSchema) (snd imodel)  
+  ckp <- parseConfigurationKnowledge (ns ckSchema) (snd ckmodel)
+  cmp <- parseComponentModel (snd cmodel)   
+
+  checkAssetsAndBuild fmp imp ckp cmp sourceDir targetDir	  
+  return $ putStrLn "Done!" 
+ else
+  return $ putStrLn "bye!" 
+
+checkAssetsAndBuild fmp imp ckp cmp sourceDir targetDir = do
+  let pResults = (fmp, imp, ckp, cmp)
+  case pResults of 
     ((Core.Success fm), (Core.Success im), (Core.Success ck), (Core.Success cm)) -> 
         do 
 	 putStrLn " Great! We could say that you have done a good job. "
 	 putStrLn " All files are syntactically correct.               "
-	 putStrLn " Should we build your product [y/n]?                " 
+	 putStrLn " Should we build your product now [y/n]?            " 
 	 
 	 proceed <- getChar 
 	 
@@ -126,8 +111,24 @@ main = do
     (_, _, (Core.Fail e), _) -> putStrLn $ "Error parsing the configuration model " ++ e
     (_, _, _, (Core.Fail e)) -> putStrLn $ "Error parsing the use case model " ++ e 
 
- putStrLn "Done!" 
+welcomeMessage = do
+ putStrLn "Welcome to Hephaestus Code Configuration"
+ putStrLn "Version: 0.01" 
+ putStrLn "Select one of the commands"
+ putStrLn "- start (to start a Hephaestus session)"
+ putStrLn "- close (to quit this interactive session)" 
  
+showHelp = do 
+  putStrLn " Please, inform the absolute name of the project file.   " 
+  putStrLn " It must specify, as pairs key=value, the path to the    " 
+  putStrLn " input files, such as:                                   " 
+  putStrLn "  name=projectName                                       " 
+  putStrLn "  feature-model={abs-path}/featureModel.xml              " 
+  putStrLn "  configuration-model={abs-path}/configurationModel.xml  " 
+  putStrLn "  instance-model={abs-path}/instanceModel.xml            " 
+  putStrLn "  component-model={abs-path}/componentModel.txt          " 
+  putStrLn "  source-dir={abs-path}/                                 " 
+  putStrLn "  target-dir={abs-path}/                                 " 
   
 
 -- createSPL :: FeatureModel -> ComponentModel -> SPLModel
