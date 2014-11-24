@@ -15,3 +15,5 @@ build:
 	ghc -i$(SRC_DIR) src/Main ${options}
 
 
+build-code-only:
+	ghc -i$(SRC_DIR) src/VMCode.hs ${options}
