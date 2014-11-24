@@ -166,7 +166,7 @@ precedence' (p:ps) ls =
     ([x],[y]) -> precedence' ps [if (fst y == fst l) then (fst y, (+1) (snd x)) else l | l <- ls]
     otherwise -> ls
 
-type OrderedTuple = Eq a => (a,Integer)
+-- type OrderedTuple = Eq a => (a,Integer)
 
 parenthesize :: [String] -> String
 parenthesize [] = "-" 

@@ -99,10 +99,10 @@ data FeatureModel = FeatureModel {
         fmConstraints :: [FeatureExpression]
 } deriving (Show, Typeable, Data)
 
-data FeatureConfiguration = FeatureConfiguration {
-	fcTree :: FeatureTree
-} deriving (Show, Typeable, Data)
-
+data FeatureConfiguration = FeatureConfiguration { fcTree :: FeatureTree } 
+     			  | FeatureSelection [Id]
+			  deriving (Show, Typeable, Data)
+			  
 foldFTree::  (b -> b -> b) -> (FeatureTree -> b) -> (FeatureTree -> b) -> b -> FeatureTree ->  b
 foldFTree f1 f2 f3 f4 (Leaf f)  = f2 (Leaf f)
 foldFTree f1 f2 f3 f4 (Root f fs) = f1 (f3 (Root f fs)) (foldr (f1) f4 [foldFTree f1 f2 f3 f4 x | x <- fs])  
