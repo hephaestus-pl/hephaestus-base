@@ -27,7 +27,7 @@ import Ensemble.Types
 data SelectComponents = SelectComponents {
  componentIds :: [Id]  
 }
- 
+
 instance Transformation SelectComponents where 
  (<+>) (SelectComponents ids) spl product = 
         case scs of 
@@ -107,3 +107,67 @@ instance Transformation PreProcessor where
 instance Show PreProcessor where 
  show (PreProcessor e) = "preProcessor " ++ (show e) 
 
+data RemoveComponents = RemoveComponents {
+  component :: [Component]
+}
+
+instance Transformation RemoveComponents where 
+ (<+>) (RemoveComponents cs) spl product = product { instanceAssetBase = iab' }
+       where
+        scs = [(fst x, snd x) | x <- mappings $ splAssetBase spl, fst x `elem` cs]  
+        iab  = instanceAssetBase product 
+        bd   = buildData iab 
+        ics  = components bd
+        ecs  = excludedComponents bd
+        bd'  = bd  { components = ics ++ scs, excludedComponents = ecs ++ cs }
+        iab' = iab { buildData = bd' } 
+
+instance Show RemoveComponents where 
+ show (RemoveComponents cs) = "remove components " ++ (show cs)
+
+data CreatePropertyFile = CreatePropertyFile {
+   fileId :: Id
+}
+
+instance Transformation CreatePropertyFile where 
+ (<+>) (CreatePropertyFile c) spl product = product { instanceAssetBase = iab' }
+       where
+         scs  = [(fst x, snd x) | x <- mappings $ splAssetBase spl, fst x == c]  
+         iab  = instanceAssetBase product
+         bd   = buildData iab 
+         ics  = components bd
+         pfs  = propertyFiles bd
+         bd'  = bd { components = scs ++ ics, propertyFiles = [(c, [])] ++ pfs }
+         iab' = iab { buildData = bd' }  
+
+instance Show CreatePropertyFile where 
+ show (CreatePropertyFile f) = "create property file " ++ f
+
+data SetPropertyInFile = SetPropertyInFile Id Key Value 
+
+instance Transformation SetPropertyInFile where 
+ (<+>) (SetPropertyInFile f k v) spl product = product { instanceAssetBase = iab' }
+       where 
+        iab  = instanceAssetBase product
+        bd   = buildData iab
+        ps   = [(fst p, (k,v) : (snd p)) | p <- propertyFiles bd, f == fst p]
+        ps'  = [p | p <- propertyFiles bd, f /= fst p]
+        bd'  = bd { propertyFiles = ps ++ ps' }
+        iab' = iab { buildData = bd' }
+
+instance Show SetPropertyInFile where 
+ show (SetPropertyInFile f k v) = "set property " ++ show (k, v) ++ " into file " ++ f
+ 
+data SelectAllComponents = SelectAllComponents 
+
+instance Transformation SelectAllComponents where 
+ (<+>) SelectAllComponents spl product = product { instanceAssetBase = iab' }
+       where 
+        iab    = instanceAssetBase product -- instance asset base 
+        bdata  = buildData iab  
+        cmps   = components bdata            -- selected components
+        bdata' = bdata {components = ("all", "all") : cmps }   
+        iab'   = iab { buildData = bdata'}  
+
+instance Show SelectAllComponents where 
+ show SelectAllComponents = "select all components"  

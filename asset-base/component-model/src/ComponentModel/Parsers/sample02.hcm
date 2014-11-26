@@ -1,0 +1,5 @@
+basePomXML => pom.xml ;
+confAccountProperties => conf/account.properties ;
+createSchema => conf/create-schema.sql ;
+addressBookFacade => iris-core/src/main/aspect/br/unb/cic/iris/core/addressbook/AddressBookFacade.java ;
+addressBookAspect => iris-core/src/main/aspect/br/unb/cic/iris/core/addressbook/FeatureAddressBook.aj; 

@@ -51,14 +51,23 @@ xmlFeature2FeatureTree (XmlFeature fid cmin cmax name children group) =
   group' = (groupTypeFromXmlGroup group)
 
  
-xml2FeatureConfiguration :: XmlFeatureConfiguration -> FeatureTree
+
+xml2FeatureConfiguration :: XmlFeatureConfiguration -> FeatureConfiguration 
 xml2FeatureConfiguration (XmlFeatureConfiguration i n v c) = 
  let 
    f = Feature i n Optional (xmlValue v) BasicFeature [] 
  in case c of   
-  Nothing -> Leaf f
-  Just cs -> Root f (map xml2FeatureConfiguration cs) 
+  Nothing -> FeatureConfiguration (Leaf f)
+  Just cs -> FeatureConfiguration (Root f (map xml2Feature cs))
 
+xml2Feature :: XmlFeatureConfiguration -> FeatureTree
+xml2Feature (XmlFeatureConfiguration i n v c) = 
+ let 
+   f = Feature i n Optional (xmlValue v) BasicFeature [] 
+ in case c of   
+  Nothing -> (Leaf f)
+  Just cs -> (Root f (map xml2Feature cs)) 
+ 
 featureTypeFromCardinality :: CMin -> FeatureType	
 featureTypeFromCardinality cmin = 
 	if (cmin == 0) 

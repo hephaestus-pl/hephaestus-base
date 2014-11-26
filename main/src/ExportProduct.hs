@@ -34,16 +34,24 @@ exportProduct s o p =
 
   print "\n Copying source files to output directory \n"
   print $ map (++ "\n") [fst c | c <- cmodel]
-  
+
+  putStrLn "we are going to export the source code"   
   exportSourceCode s o p
 
+ 
 exportSourceCode :: FilePath -> FilePath -> InstanceModel -> IO ()
 exportSourceCode s o p = 
  let bd = buildData $ instanceAssetBase p 
  in do
-  copySourceFiles s o (components bd)
-  exportBuildFile  (o ++ "/build.lst") (buildEntries bd)
-  preprocessFiles (o ++ "/build.lst") (preProcessFiles bd) o
+  if("all" `elem` (map fst (components bd))) 
+   then copyAllFiles s o
+   else do 
+    copySourceFiles s o (components bd)
+    exportBuildFile  (o ++ "/build.lst") (buildEntries bd)
+    preprocessFiles (o ++ "/build.lst") (preProcessFiles bd) o
+  putStrLn "we are going to remove components" 
+  removeComponents s o p
+  createPropertyFiles s o p
 
 
 preprocessFiles :: String -> [String] -> String -> IO()
@@ -78,6 +86,8 @@ exportAspectInterfacesToLatex f ucm =
   bracket (openFile f WriteMode)
          hClose
          (\h -> hPutStr h (show (aspectInterfacesToLatex ucm)))
+
+
 -- ----------------------------------------------------------------------
 -- Copy selected source files to the output directory
 -- ----------------------------------------------------------------------
@@ -119,3 +129,70 @@ copySourceFile source out c =
   print ("Copying file " ++ old ++ " to " ++ new)
   copyFile old new
   
+
+createPropertyFiles s o p = do
+  print "----------------------------------------"
+  print "creating property files                 " 
+  print "----------------------------------------" 
+  let bd = buildData $ instanceAssetBase p 
+  let cs = components bd
+  let ps = propertyFiles bd
+  createPropertyFiles' s o cs ps 
+ where 
+  createPropertyFiles' s o cs [] = return ()
+  createPropertyFiles' s o cs (p:ps) = do 
+   let fs = [snd f | f <- cs, fst p == fst f]
+   case fs of 
+    [f] ->  bracket (openFile (o </> f) WriteMode)
+                     hClose
+                     (\h -> hPutStr h (concat [k ++ "=" ++ v ++ "\n" | (k,v) <- snd p]))
+    otherwise -> print $ "file " ++ fst p ++ " not listed in the component model" 
+   createPropertyFiles' s o cs ps 
+
+
+removeComponents s o p = do
+  print "----------------------------------------"
+  print "removing components" 
+  print "----------------------------------------" 
+  let bd  = buildData $ instanceAssetBase p 
+  let cs  = components bd
+  let ecs = excludedComponents bd 
+  print $ ecs
+  removeComponents' s o cs ecs 
+ where
+  removeComponents' :: FilePath -> FilePath -> [ComponentMapping] -> [Component] -> IO ()
+  removeComponents' _ _ _ [] = return()
+  removeComponents' s o cs (ec:ecs) = do
+   print cs
+   let file = [snd f | f <-cs, ec == fst f]
+   case file of 
+    [ ] -> return ()
+    [f] -> removeComponent o f
+   
+removeComponent targetDir cmp = do 
+ testFile <- doesFileExist (targetDir </> cmp)
+ if(testFile) then removeFile (targetDir </> cmp)
+ else return ()
+
+copyAllFiles source out = 
+ do 
+  createDirectoryIfMissing True out
+  contents <- getDirectoryContents source
+  copyAllFiles' out contents
+ where 
+  copyAllFiles' out []     = return ()
+  copyAllFiles' out (f:fs) = do
+     testDir <- doesDirectoryExist (source </> f) 
+     if(testDir) 
+      then 
+       if(f == "." || f == "..") 
+        then return () --print $ "skiping " ++ (source </> f)
+        else do 
+          -- print $ "subdir " ++ (source </> f) 
+          copyAllFiles (source </> f) (out </> f)
+      else 
+        catch (copyFile (source </> f) (out </> f)) 
+              (\e -> do let err = show (e::IOException) 
+                        print $ "could not copy file " ++ source </> f ++ " " ++ err)  
+     copyAllFiles' out fs
+

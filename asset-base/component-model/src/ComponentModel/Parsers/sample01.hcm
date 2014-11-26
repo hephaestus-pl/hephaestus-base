@@ -1,0 +1,3 @@
+basePomXML => pom.xml ;
+confAccountProperties => conf/account.properties ;
+createSchema => conf/create-schema.sql

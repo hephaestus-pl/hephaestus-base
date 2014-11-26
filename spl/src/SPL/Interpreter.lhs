@@ -42,7 +42,7 @@ build fc spl = stepRefinement ts spl emptyInstance
   emptyUCM      = ucmodel { useCases = [] , aspects = [] }
   emptyBPM      = bpmodel { processes = [] }
   emptyReq      = RM { reqs = [] }
-  emptyInstance = InstanceModel fc (InstanceAssetBase (Assets emptyReq emptyUCM emptyBPM) (GeneratedBuildData [] [] []))
+  emptyInstance = InstanceModel fc (InstanceAssetBase (Assets emptyReq emptyUCM emptyBPM) (GeneratedBuildData [] [] [] [] []))
  	
 tasks :: ConfigurationKnowledge -> FeatureConfiguration -> [GenT]
 tasks ck fc = concat [transformations c | c <- ck, eval fc (expression c)]

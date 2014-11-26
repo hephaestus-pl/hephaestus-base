@@ -1,5 +1,8 @@
+.DS_STORE
+*.bak
 *.hi
 *.o
 *.*~
 *~
-main/Main
+main/src/Main
+main/src/VMCode

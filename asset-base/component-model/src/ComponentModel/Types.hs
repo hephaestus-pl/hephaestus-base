@@ -22,11 +22,15 @@ import Data.Generics
 import BasicTypes
 
 type Component = String 
+type Key = String
+type Value = String 
 
 data GeneratedBuildData = GeneratedBuildData {
   components :: [ComponentMapping], 
   buildEntries :: [Id],
-  preProcessFiles :: [Component]
+  preProcessFiles :: [Component],
+  excludedComponents :: [Component],
+  propertyFiles :: [(Id, [(Key, Value)])]
 } deriving(Data, Typeable)
 
 type ComponentModel = [ComponentMapping]

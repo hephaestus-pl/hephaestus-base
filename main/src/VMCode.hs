@@ -11,7 +11,8 @@ import System.Environment -- useful for getting program args
 import System.Directory
 import System.FilePath
 
-
+import System.Console.Haskeline
+import Control.Monad.Trans.Class
 import Data.Maybe
 
 
@@ -48,46 +49,59 @@ normalizedSchema cDir sch = cDir </> sch
 
 main = do 
  cDir <- getCurrentDirectory
- let ns = normalizedSchema cDir
- 
+ let ns = normalizedSchema cDir 
  welcomeMessage 
- 
  cmd <- getLine               -- read the top level command
  
- if (cmd == "start") then do
-  showHelp
-  putStrLn " ProjectFile: " 
-  f <- getLine                -- read the name of the project file   	
-  s <- readFile f             -- read the file contents
-  let l = lines s             -- split the content in several lines
-
-  -- read all properties 
-  let ps  = map fromJust (filter (isJust) (map readPropertyValue l))
- 
-  -- retrieve the specific property values we are interested in
-  let name = fromJust (findPropertyValue "name" ps)
-  let fmodel = fromJust (findPropertyValue "feature-model" ps)
-  let imodel = fromJust (findPropertyValue "instance-model" ps) 
-  let ckmodel = fromJust (findPropertyValue "configuration-model" ps)
-  let cmodel = fromJust (findPropertyValue "component-model" ps)
-  let sourceDir = fromJust (findPropertyValue "source-dir" ps)
-  let targetDir = fromJust (findPropertyValue "target-dir" ps)
-  
-  -- parser the input models        
-  fmp <- parseFeatureModel  ((ns fmSchema), snd fmodel) (fmFormat $ snd fmodel)
-  imp <- parseInstanceModel (ns fcSchema) (snd imodel)  
-  ckp <- parseConfigurationKnowledge (ns ckSchema) (snd ckmodel)
-  cmp <- parseComponentModel (snd cmodel)   
-
-  checkAssetsAndBuild fmp imp ckp cmp sourceDir targetDir	  
-  return $ putStrLn "Done!" 
+ if (cmd == "start") 
+ then do
+   showHelp
+   readFileName ns
  else
-  return $ putStrLn "bye!" 
+  putStrLn "bye!" 
+
+readFileName ns = runInputT defaultSettings loop
+ where
+  loop :: InputT IO()
+  loop = do
+   outputStrLn "ProjectFile: " -- putStrLn " ProjectFile: "
+   input <- getInputLine "> "  
+   case input of 
+     Nothing -> loop
+     Just "quit" -> return ()
+     Just f -> do
+       s <- lift $ readFile f
+       let l = lines s
+       lift $ readPropertyFile ns l 
+
+
+readPropertyFile :: (String -> String) -> [String] -> IO ()
+readPropertyFile ns l = do  
+   -- read all properties 
+   let ps  = map fromJust (filter (isJust) (map readPropertyValue l))
+ 
+   -- retrieve the specific property values we are interested in
+   let name = fromJust (findPropertyValue "name" ps)
+   let fmodel = fromJust (findPropertyValue "feature-model" ps)
+   let imodel = fromJust (findPropertyValue "instance-model" ps) 
+   let ckmodel = fromJust (findPropertyValue "configuration-model" ps)
+   let cmodel = fromJust (findPropertyValue "component-model" ps)
+   let sourceDir = fromJust (findPropertyValue "source-dir" ps)
+   let targetDir = fromJust (findPropertyValue "target-dir" ps)
+  
+   -- parser the input models        
+   fmp <- parseFeatureModel  ((ns fmSchema), snd fmodel) (fmFormat $ snd fmodel)
+   imp <- parseInstanceModel (ns fcSchema) (snd imodel) TextFormat 
+   ckp <- parseConfigurationKnowledge (ns ckSchema) (snd ckmodel)
+   cmp <- parseComponentModel (snd cmodel)   
+
+   checkAssetsAndBuild fmp imp ckp cmp sourceDir targetDir	  
+   putStrLn "Done!" 
 
 checkAssetsAndBuild fmp imp ckp cmp sourceDir targetDir = do
   let pResults = (fmp, imp, ckp, cmp)
   case pResults of 
-    ((Core.Success fm), (Core.Success im), (Core.Success ck), (Core.Success cm)) -> 
+    ((Core.Success fm), (Core.Success fc), (Core.Success ck), (Core.Success cm)) -> 
         do 
 	 putStrLn " Great! We could say that you have done a good job. "
 	 putStrLn " All files are syntactically correct.               "
@@ -97,9 +111,9 @@ checkAssetsAndBuild fmp imp ckp cmp sourceDir targetDir = do
 	 
          if proceed == 'y' 
           then do
-	   let fc = createFC im
  	   let spl = createSPL fm ck cm
-           let product = build fc spl
+           print [show t | c <- ck, (GenT t) <- transformations c, eval fc (expression c)]
+           let product = build  fc spl
            let src = snd sourceDir
            let out = snd targetDir
 	   exportSourceCode src out product
@@ -109,7 +123,7 @@ checkAssetsAndBuild fmp imp ckp cmp sourceDir targetDir = do
     ((Core.Fail e), _, _, _) -> putStrLn $ "Error parsing the feature model " ++ e 
     (_, (Core.Fail e), _, _) -> putStrLn $ "Error parsing the instance model " ++ e 
     (_, _, (Core.Fail e), _) -> putStrLn $ "Error parsing the configuration model " ++ e
-    (_, _, _, (Core.Fail e)) -> putStrLn $ "Error parsing the use case model " ++ e 
+    (_, _, _, (Core.Fail e)) -> putStrLn $ "Error parsing the component  model " ++ e 
 
 welcomeMessage = do
  putStrLn "Welcome to Hephaestus Code Configuration"
@@ -155,9 +169,10 @@ findPropertyValue k (x:xs) =
  if (k == fst x) then Just x
  else findPropertyValue k xs 
 
-createFC im = FeatureConfiguration im
+-- createFC im = im
 
 fmFormat :: String -> FmFormat
 fmFormat fileName 
  | Core.endsWith "sxfm" fileName = SXFM
+ | Core.endsWith "fide" fileName = FeatureIDE
  | otherwise = FMPlugin

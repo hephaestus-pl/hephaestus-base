@@ -99,10 +99,10 @@ data FeatureModel = FeatureModel {
         fmConstraints :: [FeatureExpression]
 } deriving (Show, Typeable, Data)
 
-data FeatureConfiguration = FeatureConfiguration {
-	fcTree :: FeatureTree
-} deriving (Show, Typeable, Data)
-
+data FeatureConfiguration = FeatureConfiguration { fcTree :: FeatureTree } 
+     			  | FeatureSelection [Id]
+			  deriving (Show, Typeable, Data)
+			  
 foldFTree::  (b -> b -> b) -> (FeatureTree -> b) -> (FeatureTree -> b) -> b -> FeatureTree ->  b
 foldFTree f1 f2 f3 f4 (Leaf f)  = f2 (Leaf f)
 foldFTree f1 f2 f3 f4 (Root f fs) = f1 (f3 (Root f fs)) (foldr (f1) f4 [foldFTree f1 f2 f3 f4 x | x <- fs])  
@@ -390,11 +390,15 @@ expToLiterals fs e = map intToLiteral (expToLiterals' fs e)
 
 \begin{code}
 eval :: FeatureConfiguration -> FeatureExpression -> Bool
-eval config (FeatureRef f) = elem f [fId (fnode x) | x <- flatten (fcTree config)]
-eval config (Not e) = not (eval config e)
-eval config (And e1 e2) = (eval config e1) && (eval config e2)
-eval config (Or e1 e2) = (eval config e1) || (eval config e2)
-eval _ (ConstantExpression e) = e
+eval (FeatureConfiguration ft) exp = eval' [fId (fnode x) | x <- flatten ft] exp
+eval (FeatureSelection ids) exp = eval' ids exp
+
+eval' :: [Id] -> FeatureExpression -> Bool 
+eval' config (FeatureRef f) = elem f config
+eval' config (Not e) = not (eval' config e)
+eval' config (And e1 e2) = (eval' config e1) && (eval' config e2)
+eval' config (Or e1 e2) = (eval' config e1) || (eval' config e2)
+eval' _ (ConstantExpression e) = e
 
 \end{code}
 

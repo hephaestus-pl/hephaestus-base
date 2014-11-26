@@ -1,7 +1,7 @@
 module FeatureModel.Parsers.GenericParser (
  parseFeatureModel, 
  parseInstanceModel, 
- FmFormat ( FMPlugin, FMIde, FMGrammar, SXFM ) 
+ FmFormat ( FMPlugin, FMIde, FMGrammar, SXFM , FeatureIDE, TextFormat) 
 )
 where 
 
@@ -19,6 +19,14 @@ import FeatureModel.Parsers.FMIde.SkelFMIde
 import FeatureModel.Parsers.FMIde.ErrM
 import FeatureModel.Parsers.FMIde.LexFMIde
 import FeatureModel.Parsers.FMIde.ParFMIde
+
+-- modules related to the FeatureIDE parser
+import qualified FeatureModel.Parsers.FeatureIDE.FeatureIDE2FeatureModel as FFIDE 
+import qualified FeatureModel.Parsers.FeatureIDE.AbsFeatureIDE as AFIDE 
+import qualified FeatureModel.Parsers.FeatureIDE.SkelFeatureIDE as SFIDE
+import qualified FeatureModel.Parsers.FeatureIDE.ErrM as EFIDE
+import qualified FeatureModel.Parsers.FeatureIDE.LexFeatureIDE as LFIDE 
+import qualified FeatureModel.Parsers.FeatureIDE.ParFeatureIDE as PFIDE 
 
 -- modules related to the FMGrammar parser
 import qualified FeatureModel.Parsers.FMGrammar.Grammar2FeatureModel as GFMG
@@ -38,7 +46,7 @@ import Text.ParserCombinators.Parsec.Language( haskellStyle )
 import Text.XML.HXT.Core
 import Text.XML.HXT.RelaxNG
 
-data FmFormat = FMPlugin | FMIde | FMGrammar | SXFM
+data FmFormat = FMPlugin | FMIde | FMGrammar | SXFM | FeatureIDE | TextFormat
 
 -- |
 -- The top most function for parsing feature models 
@@ -65,25 +73,33 @@ parseFeatureModel (schema, fileName) format = do
       Left err  -> return $ Core.Fail (show err)
       Right f  -> do let fm = f
                      return $ Core.Success fm
+  FeatureIDE -> do
+    let fm = translateFeatureIDEToFeatureModel (PFIDE.pFeatureModel (PFIDE.myLexer x))
+    return fm
 
 -- | 
 -- Parse a feature configuration. This parser 
 -- is based on the exported instance models from 
 -- FMPlugin
 --
-
-parseInstanceModel schema fileName = 
- do  
-  errs <- checkXMLFile schema fileName
-  case errs of 
-   [] -> do 
-      instanceModel <- parseInstanceModel' fileName
-      return $ instanceModel
+--parseInstanceModel :: String -> String -> FmFormat -> ParserResua--a--FeatureConfiguration
+parseInstanceModel schema fileName format = 
+ case format of 
+  FMPlugin -> do  
+   errs <- checkXMLFile schema fileName
+   case errs of 
+    [] -> do 
+       instanceModel <- parseInstanceModel' fileName
+       return $ instanceModel
    
-   otherwise -> do
-     let errs' = concat $ map show errs
-     return $ Core.Fail errs'
-  
+    otherwise -> do
+      let errs' = concat $ map show errs
+      return $ Core.Fail errs'
+  TextFormat -> do 
+      content <- readFile fileName
+      let features = lines content
+      return $ Core.Success (FeatureSelection features)
+
 parseInstanceModel' fileName = 
  do 
    i <- runX ( xunpickleDocument xpFeatureConfiguration [ withValidate yes
@@ -101,6 +117,9 @@ translateFMIdeToFm (Bad s) = Core.Fail s
 
 translateFMGrammarToFm (EFMG.Ok g) = Core.Success (GFMG.grammarToFeatureModel g)  
 translateFMGrammarToFm (EFMG.Bad s) = Core.Fail s
+
+translateFeatureIDEToFeatureModel (EFIDE.Ok g) = Core.Success (FFIDE.featureIDEToFM g)
+translateFeatureIDEToFeatureModel (EFIDE.Bad s) = Core.Fail s
 
 translateFMPToFm schema fileName = 
  do

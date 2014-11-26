@@ -101,6 +101,17 @@ xml2Transformation t =
    
    "preprocessFiles" -> Success (GenT (PreProcessor as))
 
+   "selectAllComponents" -> Success (GenT SelectAllComponents)
+
+   "removeComponents" -> Success (GenT (RemoveComponents as))
+
+   "createPropertyFile" -> case as of 
+                            [x] -> Success (GenT (CreatePropertyFile x))
+                            otherwise -> Fail "Invalid number of arguments to the create property file transformation"
+
+   "setPropertyInFile"  -> case as of 
+                            [f, k, v] -> Success (GenT (SetPropertyInFile f k v))
+                            otherwise -> Fail "Invalid number of arguments to the set property in file transformation" 
    otherwise -> Fail ("Invalid transformation: " ++ tName t)
 
 parseConstraint :: Maybe String -> Either ParseError FeatureExpression

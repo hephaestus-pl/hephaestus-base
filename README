@@ -26,6 +26,7 @@ External dependencies:
     * network-2.4.1.2
     * pango-0.12.4
     * parse-dimacs-1.2
+    * haskeline
 
 It is important to note that, after installing the Haskell Platform, we 
 could easly install these dependencies using caball install. Only the following 
@@ -33,7 +34,7 @@ could easly install these dependencies using caball install. Only the following
 
      $ cabal install bimap-0.2
      $ cabal install bitset-1.4.0
-     $ parse-dimacs-1.2
+     $ cabal install parse-dimacs-1.2
 
      $ git clone git@github.com:rbonifacio/funsat.git
      $ cd funsat
@@ -43,6 +44,12 @@ could easly install these dependencies using caball install. Only the following
 
      $ cabal install hxt
      $ cabal install hxt-relaxng
+
+     $ cabal install haskeline
+
+Note that haskeline depends on libncurses5-dev on your system. 
+Using Linux Ubuntu, we can install it running apt-get install 
+libncurses5-dev.
 
 It is also necessary to install gtk2hs into your system. See the 
 following link for further details:
