@@ -34,9 +34,13 @@ import FeatureModel.FCTypeChecker (validInstance)
 build :: FeatureConfiguration         -- ^ selection of features, which characterizes the product
       -> SPLModel                     -- ^ SPL assets
       -> InstanceModel                -- ^ resulting instance of the build process
-build fc spl = stepRefinement ts spl emptyInstance
+build fc spl = 
+ if validInstance fm fc 
+  then stepRefinement ts spl emptyInstance
+  else error "feature configuration is not a valid instance" 
  where 
   ts            = tasks (splConfigurationKnowledge spl) fc
+  fm            = splFM spl
   ucmodel       = ucModel $ splAssetBase spl
   bpmodel       = bpModel $ splAssetBase spl
   emptyUCM      = ucmodel { useCases = [] , aspects = [] }

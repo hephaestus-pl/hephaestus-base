@@ -157,21 +157,22 @@ removeComponents s o p = do
   let bd  = buildData $ instanceAssetBase p 
   let cs  = components bd
   let ecs = excludedComponents bd 
-  print $ ecs
   removeComponents' s o cs ecs 
  where
   removeComponents' :: FilePath -> FilePath -> [ComponentMapping] -> [Component] -> IO ()
   removeComponents' _ _ _ [] = return()
   removeComponents' s o cs (ec:ecs) = do
-   print cs
    let file = [snd f | f <-cs, ec == fst f]
    case file of 
     [ ] -> return ()
     [f] -> removeComponent o f
-   
+   removeComponents' s o cs ecs 
+
 removeComponent targetDir cmp = do 
  testFile <- doesFileExist (targetDir </> cmp)
- if(testFile) then removeFile (targetDir </> cmp)
+ testDir  <- doesDirectoryExist (targetDir </> cmp)
+ if (testFile)     then removeFile (targetDir </> cmp)
+ else if (testDir) then removeDirectoryRecursive (targetDir </> cmp)
  else return ()
 
 copyAllFiles source out = 
