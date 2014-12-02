@@ -165,7 +165,7 @@ removeComponents s o p = do
    let file = [snd f | f <-cs, ec == fst f]
    case file of 
     [ ] -> return ()
-    [f] -> removeComponent o f
+    (f:fs) -> removeComponent o f
    removeComponents' s o cs ecs 
 
 removeComponent targetDir cmp = do 
