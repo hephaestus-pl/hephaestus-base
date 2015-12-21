@@ -17,9 +17,9 @@
 module ComponentModel.Types
 where 
 
-import Data.Generics
+import Data.Data -- Generics
 
-import BasicTypes
+import CommonUtils
 
 type Component = String 
 type Key = String

@@ -16,7 +16,7 @@ import Control.Monad.Trans.Class
 import Data.Maybe
 
 
-import qualified BasicTypes as Core
+import qualified CommonUtils as Core
 
 import ComponentModel.Types
 import ComponentModel.Parsers.ParserComponentModel
@@ -54,11 +54,11 @@ main = do
  cmd <- getLine               -- read the top level command
  
  if (cmd == "start") 
- then do
-   showHelp
-   readFileName ns
- else
-  putStrLn "bye!" 
+  then do
+     showHelp
+     readFileName ns
+  else
+     putStrLn "bye!" 
 
 readFileName ns = runInputT defaultSettings loop
  where

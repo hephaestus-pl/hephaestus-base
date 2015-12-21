@@ -17,7 +17,7 @@ import UseCaseModel.PrettyPrinter.Latex
 import UseCaseModel.PrettyPrinter.LatexUserActions
 import UseCaseModel.PrettyPrinter.XML
 
-import qualified BasicTypes as Core
+import qualified CommonUtils as Core
 
 exportProduct :: FilePath -> FilePath -> InstanceModel -> IO ()
 exportProduct s o p = 
@@ -171,9 +171,12 @@ removeComponents s o p = do
 removeComponent targetDir cmp = do 
  testFile <- doesFileExist (targetDir </> cmp)
  testDir  <- doesDirectoryExist (targetDir </> cmp)
- if (testFile)     then removeFile (targetDir </> cmp)
- else if (testDir) then removeDirectoryRecursive (targetDir </> cmp)
- else return ()
+ if (testFile) 
+    then removeFile (targetDir </> cmp)
+    else 
+      if (testDir) 
+         then removeDirectoryRecursive (targetDir </> cmp)
+         else return ()
 
 copyAllFiles source out = 
  do 

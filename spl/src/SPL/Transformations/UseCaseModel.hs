@@ -16,13 +16,17 @@
 module SPL.Transformations.UseCaseModel 
 where
 
-import BasicTypes
+import CommonUtils
 import UseCaseModel.Types
 import FeatureModel.Types
 import SPL.Types
 import Ensemble.Types 
 
+import Data.Data 
+
 import Data.Generics
+
+import Data.Typeable 
 import Data.Maybe
 import Data.List
 
@@ -145,7 +149,7 @@ refers :: Step -> Id -> Bool
 refers s pid = 
  let 
   w = "{" ++ pid ++ "}" 
-  wExists = existsWord w
+  wExists = existWord w
  in (wExists (action s)) || (wExists (state s)) || (wExists (response s))
     
 

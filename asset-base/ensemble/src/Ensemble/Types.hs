@@ -6,7 +6,7 @@ import BusinessProcess.Types
 import RequirementModel.Types
 import ComponentModel.Types
 
-import Data.Generics
+import Data.Data -- .Generics
 
 data Assets = Assets {
   req :: RequirementModel,  

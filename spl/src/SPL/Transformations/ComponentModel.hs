@@ -15,7 +15,7 @@
 module SPL.Transformations.ComponentModel
 where 
 
-import BasicTypes
+import CommonUtils 
 import SPL.Types
 import ComponentModel.Types
 import Ensemble.Types

@@ -1,6 +1,6 @@
 module UseCaseModel.PrettyPrinter.XML where
 
-import BasicTypes
+import CommonUtils
 
 import Text.PrettyPrint.HughesPJ
 import UseCaseModel.Types

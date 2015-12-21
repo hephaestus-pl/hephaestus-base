@@ -23,9 +23,11 @@ import Data.List
 
 import Data.Maybe
 
+import Data.Data
+
 import Data.Generics
 
-import BasicTypes
+import CommonUtils
 
 type Description = String
 type Action = String

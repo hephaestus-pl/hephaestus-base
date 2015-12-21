@@ -1,7 +1,7 @@
 module SPL.Transformations.Parsers.XML.XmlConfigurationKnowledge
 where
 
-import BasicTypes
+import CommonUtils 
 
 import SPL.Types
 

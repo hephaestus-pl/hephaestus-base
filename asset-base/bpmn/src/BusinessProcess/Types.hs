@@ -14,7 +14,7 @@ module BusinessProcess.Types
 )
 where 
 
-import Data.Generics
+import Data.Data  -- .Generics
 
 type Annotation = String
 type Id = String

@@ -18,9 +18,9 @@
 module RequirementModel.Types
 where 
 
-import BasicTypes
+import CommonUtils
 
-import Data.Generics
+import Data.Data -- Generics
 
 -- | 
 -- The SPL requirement model data type.

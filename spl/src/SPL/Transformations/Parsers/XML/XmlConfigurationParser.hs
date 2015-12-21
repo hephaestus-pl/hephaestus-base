@@ -14,7 +14,7 @@
 module SPL.Transformations.Parsers.XML.XmlConfigurationParser(parseConfigurationKnowledge)
 where
 
-import BasicTypes 
+import CommonUtils
 
 import Text.XML.HXT.Core
 import Text.XML.HXT.RelaxNG

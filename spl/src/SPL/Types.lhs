@@ -16,14 +16,15 @@
 module SPL.Types
 where
 
-import Data.Generics
+import Data.Data -- Generics
 
-import BasicTypes
+import CommonUtils
 import ComponentModel.Types
 import BusinessProcess.Types
 import UseCaseModel.Types
 import RequirementModel.Types
 import Ensemble.Types
+import Data.Generics
 
 import FeatureModel.Types (FeatureModel, FeatureConfiguration, FeatureExpression)
 

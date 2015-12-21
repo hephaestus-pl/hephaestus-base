@@ -1,7 +1,7 @@
 module ComponentModel.Parsers.ParserComponentModel
 where 
 
-import BasicTypes
+import CommonUtils
 
 import ComponentModel.Parsers.AbsComponentModel
 import ComponentModel.Parsers.SkelComponentModel

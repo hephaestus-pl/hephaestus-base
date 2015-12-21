@@ -1,0 +1,36 @@
+Name: hephaestus
+Version: 0.0.1
+Synopsis:	A product derivation tool for SPLs
+Description:	later
+License:             GPL
+License-file:        LICENSE
+Author:              Rodrigo Bonifacio
+Maintainer:          Rodrigo Bonifacio <rbonifacio@computer.org>
+cabal-version: >= 1.2
+
+Executable hephaestus
+  Main-is: VMCode.hs
+  extensions: DeriveDataTypeable MultiParamTypeClasses Rank2Types
+  Build-Depends: base,
+                 array,
+                 pretty, 
+                 process,
+                 directory,
+                 filepath,
+                 haskeline,
+                 hxt,
+                 hxt-relaxng,
+                 network-uri,
+                 parsec,
+                 syb,
+                 hephaestus-commons,
+                 feature-modeling, 
+                 transformers  
+  hs-source-dirs: spl/src,
+                util/src, 
+                asset-base/ensemble/src/, 
+                asset-base/uc-model/src,
+                asset-base/req-model/src,
+                asset-base/component-model/src,
+                asset-base/bpmn/src,
+                main/src
