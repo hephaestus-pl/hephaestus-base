@@ -13,6 +13,7 @@ installation.
 In the target directory, such as $USER_HOME/workspace/hephaestus, you 
 must clone several Hephaestus repositories from github. 
 
+<verbatim>
 $ git clone https://github.com/hephaestus-pl/funsat.git
 
 $ git clone https://github.com/hephaestus-pl/feature-modelling.git
@@ -23,6 +24,7 @@ $ git clone https://github.com/hephaestus-pl/hephaestus-base.git
 
 $ git clone https://github.com/hephaestus-pl/hephaestus-pp.git
 
+</verbatim>
 ### Create a cabal sandbox
 
 In the target directory, create an hephaestus-sb directory, and initialize 
