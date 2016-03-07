@@ -1,15 +1,15 @@
-# Hephaetus
-
+Hephaetus
+==============
 This is the main repository of Hephaestus, an SPL derivation tool. 
 
-## Installation  
-
+Installation  
+==
 Currently, we are using the Haskell cabal infrastructure to build 
 Hephaestus. The following steps should be necessary for a basic 
 installation. 
 
-### Clone the repositories
-
+Clone the repositories
+=
 In the target directory, such as $USER_HOME/workspace/hephaestus, you 
 must clone several Hephaestus repositories from github. 
 
@@ -44,13 +44,13 @@ $ cabal install
 $ cd ..
 
 $ cd feature-modeling 
-$ cabal sandbox init --sandbox
+$ cabal sandbox init --sandbox ../hephaestus-sb
 $ cabal install --dependencies-only
 $ cabal install
 $ cd ..
 
 $ cd hephaetus-base
-$ cabal sandbox init --sandbox
+$ cabal sandbox init --sandbox ../hephaestus-sb
 $ cabal install --dependencies-only
 $ cabal install
 $ cd ..
