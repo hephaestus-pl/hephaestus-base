@@ -47,18 +47,22 @@ exportSourceCode s o p =
    then copyAllFiles s o
    else do 
     copySourceFiles s o (components bd)
-    exportBuildFile  (o ++ "/build.lst") (buildEntries bd)
-    preprocessFiles (o ++ "/build.lst") (preProcessFiles bd) o
+  preprocessFiles (preProcessFiles bd) o
+  exportBuildFile  (o ++ "/build.lst") (buildEntries bd)
   putStrLn "we are going to remove components" 
   removeComponents s o p
   createPropertyFiles s o p
 
 
-preprocessFiles :: String -> [String] -> String -> IO()
-preprocessFiles _ [] _ = return()
-preprocessFiles flags files outputFolder = do 
-   pid <- runCommand ("java -jar preprocessor.jar \"" ++ flags ++ "\"" ++ (concatPaths files outputFolder))
-   waitForProcess pid >>= exitWith
+-- preprocessFiles :: String -> [String] -> String -> IO()
+preprocessFiles :: [String] -> String -> IO ()
+preprocessFiles [] _ = return ()
+preprocessFiles files outputFolder = do 
+   -- pid <- runCommand ("java -jar preprocessor.jar \"" ++ flags ++ "\"" ++ (concatPaths files outputFolder))
+   -- waitForProcess pid >>= exitWith
+ bracket (openFile (outputFolder </> "files.pp") WriteMode)
+          hClose
+          (\h -> hPutStr h (concat [(outputFolder </> e) ++ "\n" | e <- files]))
    
 concatPaths :: [String] -> String -> String
 concatPaths [] _ = ""

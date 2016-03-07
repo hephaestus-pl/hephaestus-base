@@ -100,7 +100,8 @@ instance Transformation PreProcessor where
          iab = instanceAssetBase product
          bd = buildData iab 
          es = preProcessFiles bd
-         bd' = bd { preProcessFiles = es ++ e }
+         scs = [snd x | x <- mappings $ splAssetBase spl, fst x `elem` e] 
+         bd' = bd { preProcessFiles = es ++ scs }
          iab' = iab { buildData = bd' }
           
 
