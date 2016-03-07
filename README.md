@@ -13,72 +13,72 @@ installation.
 In the target directory, such as $USER_HOME/workspace/hephaestus, you 
 must clone several Hephaestus repositories from github. 
 
-<verbatim>
-$ git clone https://github.com/hephaestus-pl/funsat.git
 
-$ git clone https://github.com/hephaestus-pl/feature-modelling.git
+> $ git clone https://github.com/hephaestus-pl/funsat.git
+>
+> $ git clone https://github.com/hephaestus-pl/feature-modelling.git
+>
+> $ git clone https://github.com/hephaestus-pl/commons.git 
+> 
+> $ git clone https://github.com/hephaestus-pl/hephaestus-base.git
+> 
+> $ git clone https://github.com/hephaestus-pl/hephaestus-pp.git
 
-$ git clone https://github.com/hephaestus-pl/commons.git 
 
-$ git clone https://github.com/hephaestus-pl/hephaestus-base.git
-
-$ git clone https://github.com/hephaestus-pl/hephaestus-pp.git
-
-</verbatim>
 ### Create a cabal sandbox
 
 In the target directory, create an hephaestus-sb directory, and initialize 
 it as a cabal sandbox. 
 
-$ mkdir hephaestus-sb
-
-$ cd hephaestus-sb
-
-$ cabal sandbox init --sandbox .
-
-$ cd ..
+> $ mkdir hephaestus-sb
+>
+> $ cd hephaestus-sb
+>
+> $ cabal sandbox init --sandbox .
+>
+> $ cd ..
 
 Initialize all repositories to use that sandbox, and install the respective libraries and tools. 
 
-$ cd funsat
- 
-$ cabal sandbox init --sandbox ../hephaestus-sb
+> $ cd funsat
+>
+> $ cabal sandbox init --sandbox ../hephaestus-sb
+>
+> $ cabal install --dependencies-only
+>
+> $ cabal install
+>
+> $ cd ..
+>
+> $ cd commons
 
-$ cabal install --dependencies-only
+> $ cabal sandbox init --sandbox ../hephaestus-sb
+>
+> $ cabal install --dependencies-only
+>
+> $ cabal install
+>
+> $ cd ..
 
-$ cabal install
+> $ cd feature-modeling 
+>
+> $ cabal sandbox init --sandbox ../hephaestus-sb
+>
+> $ cabal install --dependencies-only
+>
+> $ cabal install
 
-$ cd ..
-
-$ cd commons
-
-$ cabal sandbox init --sandbox ../hephaestus-sb
-
-$ cabal install --dependencies-only
-
-$ cabal install
-
-$ cd ..
-
-$ cd feature-modeling 
-
-$ cabal sandbox init --sandbox ../hephaestus-sb
-
-$ cabal install --dependencies-only
-
-$ cabal install
-
-$ cd ..
-
-$ cd hephaetus-base
-
-$ cabal sandbox init --sandbox ../hephaestus-sb
-
-$ cabal install --dependencies-only
-
-$ cabal install
-
-$ cd ..
+> $ cd ..
+>
+> $ cd hephaetus-base
+>
+> $ cabal sandbox init --sandbox ../hephaestus-sb
+>
+> $ cabal install --dependencies-only
+>
+> $ cabal install
+>
+> $ cd ..
 
 This last step should build hephaetus and install it on 
 $USER_HOME/workspace/hephaestus/hephaestus-sb/bin. You 
