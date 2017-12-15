@@ -14,6 +14,8 @@ module BusinessProcess.Types
 )
 where 
 
+import Prelude hiding((<*>))
+
 import Data.Data  -- .Generics
 
 type Annotation = String
